@@ -491,6 +491,12 @@
       width: 100%;
       max-height: 60vh;
       overflow-y: auto;
+      scrollbar-width: none; /* Hide scrollbar for Firefox */
+      -ms-overflow-style: none; /* Hide scrollbar for IE/Edge */
+    }
+
+    .cards-container::-webkit-scrollbar {
+      display: none; /* Hide scrollbar for Chrome/Safari */
     }
 
     /* Card Frame */
@@ -595,6 +601,8 @@
     /* Hover Tooltip */
     .hover-card {
       position: fixed;
+      top: -9999px;
+      left: -9999px;
       pointer-events: none;
       display: none;
       flex-direction: column;
@@ -1070,8 +1078,8 @@
         } else {
           hcRarity.innerHTML = `<span style="color:#888;">No Enchantment</span>`;
         }
-        hc.style.display = 'flex';
         moveHoverCard(e);
+        hc.style.display = 'flex';
       });
 
       eqBox.addEventListener('mousemove', moveHoverCard);
@@ -1377,8 +1385,8 @@
         hcImg.src = './enchantbook.gif';
       }
       hcRarity.innerHTML = `<span style="color:#00ff66;">${ench.name || ench.type}</span><br><span style="color:#798cb8; font-size:0.45rem;">${ench.desc}</span>`;
-      hc.style.display = 'flex';
       moveHoverCard(e);
+      hc.style.display = 'flex';
     }
 
     function buyEnchant(enchId) {
@@ -1470,8 +1478,8 @@
       hcRarity.textContent = tier.label;
       hcRarity.style.color = getComputedStyle(document.documentElement).getPropertyValue(`--${tier.id.replace('t-', 't')}`);
 
-      hc.style.display = 'flex';
       moveHoverCard(e);
+      hc.style.display = 'flex';
     }
 
     function moveHoverCard(e) {
@@ -1491,7 +1499,11 @@
       hc.style.top = `${top}px`;
     }
 
-    function hideHoverCard() { hc.style.display = 'none'; }
+    function hideHoverCard() { 
+      hc.style.display = 'none'; 
+      hc.style.top = '-9999px';
+      hc.style.left = '-9999px';
+    }
     function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
     function getRandomInt(min, max) {
