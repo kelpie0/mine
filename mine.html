@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>mine</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Theme Presets */
+      --bg: #141b2d;
+      --panel: #1e2942;
+      --border: #3b4c73;
+      --text: #00ff66;
+      --text-dim: #798cb8;
+      --card-bg: #090c14;
+
+      /* Retro CRT Glow Tiers */
+      --t1: #7d85a0;
+      --t10: #00bfff;
+      --t100: #bd00ff;
+      --t1000: #ffd700;
+      --t10000: #ff0055;
+      --t100000: #00ffff;
+      --t1000000: #ff55ff;
+      --t10000000: #ff0000;
+      --t100000000: #00ff66;
+    }
+
+    /* Built-in Themes */
+    body.theme-light {
+      --bg: #e2e8f0;
+      --panel: #cbd5e1;
+      --border: #94a3b8;
+      --text: #0f172a;
+      --text-dim: #475569;
+      --card-bg: #f8fafc;
+    }
+
+    body.theme-midnight {
+      --bg: #050508;
+      --panel: #0d0e14;
+      --border: #1a1c29;
+      --text: #00ff66;
+      --text-dim: #414766;
+      --card-bg: #000000;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Press Start 2P', monospace;
+      image-rendering: pixelated;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Scanline CRT Overlay */
+    body::before {
+      content: " ";
+      display: block;
+      position: absolute;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+      background-size: 100% 4px;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    /* Top Right Action Bar */
+    .top-bar {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 20;
+    }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      background: var(--panel);
+      border: 2px solid var(--border);
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.3);
+      padding: 6px;
+    }
+
+    .icon-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .icon-btn:active {
+      transform: translateY(2px);
+      box-shadow: none;
+    }
+
+    /* Currency Display */
+    .coins-display {
+      height: 42px;
+      background: var(--panel);
+      border: 2px solid var(--border);
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.3);
+    }
+
+    .coins-display img {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+    }
+
+    .coins-text {
+      font-size: 0.65rem;
+      color: #ffd700;
+      text-shadow: 0 0 6px rgba(255, 215, 0, 0.4);
+    }
+
+    /* Bottom Left Equipped Pickaxe Display */
+    .equipped-display {
+      position: fixed;
+      bottom: 16px;
+      left: 276px;
+      background: var(--panel);
+      border: 3px solid var(--border);
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
+      z-index: 20;
+      cursor: pointer;
+    }
+
+    .equipped-img-pick {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+    }
+
+    /* Generic Modal Overlay */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.75);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-window {
+      background: var(--panel);
+      border: 4px solid var(--border);
+      padding: 24px;
+      width: 440px;
+      max-height: 85vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 0 25px rgba(0,0,0,0.8);
+      position: relative;
+    }
+
+    .modal-title {
+      font-size: 0.75rem;
+      color: var(--text);
+      text-transform: uppercase;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .modal-row label {
+      font-size: 0.55rem;
+      color: var(--text-dim);
+    }
+
+    .modal-row input[type="range"] {
+      width: 100%;
+      accent-color: #ff0055;
+      cursor: pointer;
+    }
+
+    /* Custom Dropdown */
+    .custom-dropdown {
+      position: relative;
+      width: 100%;
+    }
+
+    .dropdown-selected {
+      background: var(--bg);
+      color: #fff;
+      border: 2px solid var(--border);
+      padding: 8px;
+      font-size: 0.55rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .dropdown-options {
+      position: absolute;
+      top: 100%; left: 0; right: 0;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-top: none;
+      display: none;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .dropdown-options.show {
+      display: flex;
+    }
+
+    .dropdown-option {
+      padding: 8px;
+      font-size: 0.55rem;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .dropdown-option:hover {
+      background: #ff0055;
+    }
+
+    .close-btn {
+      align-self: flex-end;
+      background: #ff0055;
+      color: #fff;
+      border: 2px solid #fff;
+      padding: 8px 12px;
+      font-size: 0.55rem;
+      cursor: pointer;
+    }
+
+    /* Shop & Enchant Item Cards */
+    .shop-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .shop-item {
+      background: rgba(0,0,0,0.3);
+      border: 2px solid var(--border);
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .shop-item-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .shop-item-img {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+    }
+
+    .shop-item-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .shop-item-sub {
+      font-size: 0.45rem;
+      color: var(--text-dim);
+      line-height: 1.3;
+    }
+
+    .buy-btn {
+      background: #00bfff;
+      color: #000;
+      border: 2px solid #fff;
+      padding: 6px 10px;
+      font-size: 0.5rem;
+      cursor: pointer;
+      font-weight: bold;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .buy-btn:disabled {
+      background: #444;
+      color: #888;
+      border-color: #666;
+      cursor: not-allowed;
+    }
+
+    .buy-btn.equipped {
+      background: #00ff66;
+      color: #000;
+    }
+
+    .btn-icon-img {
+      width: 14px;
+      height: 14px;
+      object-fit: contain;
+    }
+
+    /* Enchantment Table Theme */
+    .enchant-modal {
+      background: var(--panel);
+      border-color: var(--border);
+    }
+
+    .enchant-modal .modal-title {
+      color: var(--text);
+      border-color: var(--border);
+    }
+
+    .enchant-timer {
+      font-size: 0.5rem;
+      color: #ff8800;
+      margin-bottom: 4px;
+      text-align: right;
+    }
+
+    .book-buy-bar {
+      background: rgba(0,0,0,0.25);
+      border: 2px solid var(--border);
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .book-buy-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.55rem;
+      color: var(--text);
+    }
+
+    .book-buy-info img {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+    }
+
+    .enchant-item {
+      background: rgba(0,0,0,0.3);
+      border: 2px solid var(--border);
+      position: relative;
+    }
+
+    .enchant-btn {
+      background: #00bfff;
+      color: #000;
+      border-color: #fff;
+    }
+
+    /* Retro Left Feed */
+    .left-feed {
+      width: 260px;
+      height: 100vh;
+      border-right: 3px solid var(--border);
+      background: var(--panel);
+      padding: 12px 8px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: inset -5px 0 10px rgba(0,0,0,0.4);
+    }
+
+    .tier-section {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .tier-header {
+      font-size: 0.55rem;
+      padding: 4px 6px;
+      border-bottom: 2px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .tier-header.t-100000000 { color: var(--t100000000); border-color: var(--t100000000); }
+    .tier-header.t-10000000  { color: var(--t10000000);  border-color: var(--t10000000); }
+    .tier-header.t-1000000   { color: var(--t1000000);   border-color: var(--t1000000); }
+    .tier-header.t-100000    { color: var(--t100000);    border-color: var(--t100000); }
+    .tier-header.t-10000     { color: var(--t10000);     border-color: var(--t10000); }
+    .tier-header.t-1000      { color: var(--t1000);      border-color: var(--t1000); }
+    .tier-header.t-100       { color: var(--t100);       border-color: var(--t100); }
+    .tier-header.t-10        { color: var(--t10);        border-color: var(--t10); }
+    .tier-header.t-1         { color: var(--t1);         border-color: var(--t1); }
+
+    .feed-items-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .feed-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 6px;
+      background: rgba(0,0,0,0.25);
+      border: 1px solid var(--border);
+      cursor: pointer;
+    }
+
+    .emote-img {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+    }
+
+    .feed-count {
+      font-size: 0.65rem;
+      color: var(--text);
+      text-shadow: 0 0 6px rgba(0,255,102,0.6);
+    }
+
+    /* Main Stage */
+    .main-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+    }
+
+    .roll-stage {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* Container for multi-mining cards */
+    .cards-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+
+    /* Card Frame */
+    .roll-card {
+      width: 280px;
+      height: 280px;
+      background: var(--card-bg);
+      border: 4px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, width 0.2s ease, height 0.2s ease;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    /* Dynamic Sizing when Multiple Mining Squares Exist */
+    .cards-container.multi-2 .roll-card { width: 220px; height: 220px; }
+    .cards-container.multi-3 .roll-card { width: 180px; height: 180px; }
+    .cards-container.multi-4 .roll-card { width: 150px; height: 150px; }
+    .cards-container.multi-many .roll-card { width: 110px; height: 110px; }
+
+    .display-img {
+      width: 70%;
+      height: 70%;
+      object-fit: contain;
+      opacity: 0;
+      transform: scale(0.6);
+      transition: opacity 0.1s steps(3), transform 0.1s steps(3);
+      z-index: 2;
+    }
+
+    .display-img.active {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Shake Animation */
+    .roll-card.rolling {
+      animation: shake var(--shake-dur, 0.08s) infinite alternate;
+      border-color: #ffffff !important;
+      box-shadow: 0 0 20px #ffffff !important;
+    }
+
+    @keyframes shake {
+      0% { transform: translate(2px, 1px) rotate(0deg); }
+      50% { transform: translate(-1px, -2px) rotate(-1deg); }
+      100% { transform: translate(-3px, 0px) rotate(1deg); }
+    }
+
+    .display-img.pulse-reveal {
+      animation: popGlow 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popGlow {
+      0% { transform: scale(0.2); filter: brightness(3); }
+      50% { transform: scale(1.2); filter: brightness(1.5); }
+      100% { transform: scale(1); filter: brightness(1); }
+    }
+
+    /* Retro Button */
+    .roll-btn {
+      width: 100%;
+      max-width: 480px;
+      padding: 16px;
+      border: 4px solid #fff;
+      background: #ff0055;
+      color: #fff;
+      font-size: 0.95rem;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #990033, 0 0 15px rgba(255, 0, 85, 0.4);
+      transition: transform 0.05s ease, box-shadow 0.05s ease;
+    }
+
+    .roll-btn:disabled {
+      background: #555;
+      box-shadow: none;
+      cursor: not-allowed;
+      border-color: #888;
+    }
+
+    .roll-btn:not(:disabled):active {
+      transform: translateY(5px);
+      box-shadow: 0 0 0 #990033, 0 0 20px rgba(255, 0, 85, 0.8);
+    }
+
+    .toggle-btn {
+      background: var(--bg);
+      color: #fff;
+      border: 2px solid var(--border);
+      padding: 8px;
+      font-size: 0.55rem;
+      cursor: pointer;
+    }
+
+    .toggle-btn.active {
+      background: #ff0055;
+      border-color: #fff;
+    }
+
+    /* Hover Tooltip */
+    .hover-card {
+      position: fixed;
+      pointer-events: none;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 10px;
+      background: var(--panel);
+      border: 2px solid #fff;
+      box-shadow: 0 0 15px rgba(0,0,0,0.8);
+      z-index: 300;
+    }
+
+    .hover-card img {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+    }
+
+    .hover-card .hc-name {
+      font-size: 0.6rem;
+      color: #fff;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .hover-card .hc-rarity {
+      font-size: 0.55rem;
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    /* Glow Classes */
+    .glow-1 { border-color: var(--t1); box-shadow: 0 0 20px var(--t1); }
+    .glow-10 { border-color: var(--t10); box-shadow: 0 0 25px var(--t10); }
+    .glow-100 { border-color: var(--t100); box-shadow: 0 0 30px var(--t100); }
+    .glow-1000 { border-color: var(--t1000); box-shadow: 0 0 35px var(--t1000); }
+    .glow-10000 { border-color: var(--t10000); box-shadow: 0 0 45px var(--t10000); }
+    .glow-100000 { border-color: var(--t100000); box-shadow: 0 0 60px var(--t100000); }
+    .glow-1000000 { border-color: var(--t1000000); box-shadow: 0 0 75px var(--t1000000); }
+    .glow-10000000 { border-color: var(--t10000000); box-shadow: 0 0 90px var(--t10000000); }
+    .glow-100000000 { border-color: var(--t100000000); box-shadow: 0 0 100px var(--t100000000); }
+  </style>
+</head>
+<body class="theme-midnight">
+
+  <!-- Top Action Bar -->
+  <div class="top-bar">
+    <div class="coins-display">
+      <img src="./coin.png" alt="coin" />
+      <span class="coins-text" id="coinsText">0</span>
+    </div>
+
+    <button class="icon-btn" onclick="openModal('shopModal')" title="Pickaxe Shop">
+      <img src="./shop.png" alt="shop" />
+    </button>
+
+    <button class="icon-btn" onclick="openModal('upgradesModal')" title="Upgrades Shop">
+      <img src="./upgrade.png" alt="upgrades" />
+    </button>
+
+    <button class="icon-btn" onclick="openModal('enchantModal')" title="Enchanting Table">
+      <img src="./enchantbook.gif" alt="enchant" />
+    </button>
+
+    <button class="icon-btn" onclick="openModal('settingsModal')" title="Settings">
+      <img src="./settings.png" alt="settings" />
+    </button>
+  </div>
+
+  <!-- Bottom Left Equipped Display -->
+  <div class="equipped-display" id="equippedBox">
+    <img id="eqPickImg" class="equipped-img-pick" src="./woodenpickaxe.png" alt="pick" />
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-window">
+      <div class="modal-title">SETTINGS</div>
+      
+      <div class="modal-row">
+        <label>VOLUME</label>
+        <input type="range" id="volSlider" min="0" max="1" step="0.05" value="0.3" oninput="saveSettings()">
+      </div>
+
+      <div class="modal-row">
+        <label>THEME</label>
+        <div class="custom-dropdown">
+          <div class="dropdown-selected" id="themeSelected" onclick="toggleDropdown()">
+            <span>Midnight</span> ▼
+          </div>
+          <div class="dropdown-options" id="dropdownOptions">
+            <div class="dropdown-option" onclick="selectTheme('midnight', 'Midnight')">Midnight</div>
+            <div class="dropdown-option" onclick="selectTheme('navy', 'Light Navy')">Light Navy</div>
+            <div class="dropdown-option" onclick="selectTheme('light', 'Light')">Light</div>
+            <div class="dropdown-option" onclick="selectTheme('custom', 'Custom Hex')">Custom Hex</div>
+          </div>
+        </div>
+        <input type="color" id="customPicker" value="#050508" style="display:none; width:100%; height:30px; margin-top:6px;" onchange="applyCustomColor(this.value); saveSettings();">
+      </div>
+
+      <div class="modal-row">
+        <label>AUTO MINE</label>
+        <button class="toggle-btn" id="autoBtn" onclick="toggleAuto()">AUTO: OFF</button>
+      </div>
+
+      <button class="close-btn" onclick="closeModal('settingsModal')">CLOSE</button>
+    </div>
+  </div>
+
+  <!-- Pickaxe Shop Modal -->
+  <div class="modal-overlay" id="shopModal">
+    <div class="modal-window">
+      <div class="modal-title">PICKAXE SHOP</div>
+      <div class="shop-list" id="pickaxeShopList"></div>
+      <button class="close-btn" onclick="closeModal('shopModal')">CLOSE</button>
+    </div>
+  </div>
+
+  <!-- Upgrades Shop Modal -->
+  <div class="modal-overlay" id="upgradesModal">
+    <div class="modal-window">
+      <div class="modal-title">UPGRADES</div>
+      <div class="shop-list" id="upgradesShopList"></div>
+      <button class="close-btn" onclick="closeModal('upgradesModal')">CLOSE</button>
+    </div>
+  </div>
+
+  <!-- Enchanting Table Modal -->
+  <div class="modal-overlay" id="enchantModal">
+    <div class="modal-window enchant-modal">
+      <div class="modal-title">
+        <span>ENCHANTING TABLE</span>
+      </div>
+      <div class="enchant-timer" id="enchantTimer">RESET IN: 10:00</div>
+      
+      <div class="book-buy-bar">
+        <div class="book-buy-info">
+          <img src="./lapis.png" alt="lapis" />
+          <span><strong id="lapisCountText" style="color:#00ff66;">0</strong></span>
+        </div>
+        <button class="buy-btn" onclick="buyLapis()">BUY LAPIS ($500)</button>
+      </div>
+
+      <div class="shop-list" id="enchantShopList"></div>
+      <button class="close-btn" onclick="closeModal('enchantModal')">CLOSE</button>
+    </div>
+  </div>
+
+  <!-- Left Side Feed -->
+  <div class="left-feed" id="leftFeed"></div>
+
+  <!-- Central Roller -->
+  <div class="main-area">
+    <div class="roll-stage">
+      <div class="cards-container" id="cardsContainer"></div>
+      <button class="roll-btn" id="rollBtn" onclick="mine()">[ MINE ]</button>
+    </div>
+  </div>
+
+  <!-- Floating Hover Card -->
+  <div class="hover-card" id="hoverCard">
+    <span class="hc-name" id="hcName"></span>
+    <img id="hcImg" src="" alt="" />
+    <span class="hc-rarity" id="hcRarity"></span>
+  </div>
+
+  <script>
+    const items = {
+      xdd:            './xdd-4x.png',
+      rainbla:        './rainbla-4x.png',
+      goldbla:        './goldbla-4x.png',
+      bla:            './bla-4x.png',
+      lerolero:       './lerolero-4x.gif',
+      rainblorp:      './rainblorp-4x.png',
+      maxwell:        './maxwell-4x.gif',
+      goldlorp:       './GOLDlorp-4x.png',
+      RainbowGoobert: './RainbowGoobert-4x.png',
+      RainbowGem:     './RainbowGem-4x.gif',
+      EnchantedCat:   './enchantedcat-4x.gif',
+      glorp:          './glorp-4x.png',
+      Diamond:        './Diamond-4x.gif',
+      michael:        './michael-4x.png',
+      Opal:           './Opal-4x.png',
+      Goldge:         './Goldge-4x.gif',
+      Emeraldge:      './Emeraldge-4x.gif',
+      Diamondge:      './Diamondge-4x.gif',
+      Iron:           './Iron-4x.png',
+      Copper:         './Copper-4x.png',
+      Bone:           './bone-4x.png',
+      Coal:           './Coal-4x.png',
+      Dirt:           './Dirt-4x.png',
+      Stone:          './stone-4x.png'
+    };
+
+    const pickaxes = [
+      { id: 'woodenpickaxe',    cost: 0,       speedMultiplier: 1.0,  desc: '1.0x Speed' },
+      { id: 'stonepickaxe',     cost: 250,     speedMultiplier: 1.25, desc: '1.25x Speed' },
+      { id: 'ironpickaxe',      cost: 1500,    speedMultiplier: 1.6,  desc: '1.60x Speed' },
+      { id: 'goldenpickaxe',    cost: 8000,    speedMultiplier: 2.2,  desc: '2.20x Speed' },
+      { id: 'diamondpickaxe',   cost: 50000,   speedMultiplier: 3.0,  desc: '3.00x Speed' },
+      { id: 'netheritepickaxe', cost: 250000,  speedMultiplier: 4.5,  desc: '4.50x Speed' }
+    ];
+
+    const upgradesConfig = [
+      { id: 'multiMine', name: 'Multi-Mine', icon: './upgrades.png', baseCost: 500, costMult: 1.8, maxLevel: 50, descPerLevel: '+1 Mining Square per action' },
+      { id: 'luckBoost', name: 'Extra Luck', icon: './upgrades.png', baseCost: 500, costMult: 2.2, maxLevel: 10, descPerLevel: '+10% Rare Find Chance' },
+      { id: 'coinMulti', name: 'Coin Multiplier', icon: './upgrades.png', baseCost: 750, costMult: 2.2, maxLevel: 10, descPerLevel: '+25% Coins Earned' },
+      { id: 'autoSpeed', name: 'Auto-Speed', icon: './upgrades.png', baseCost: 1500, costMult: 2.5, maxLevel: 5, descPerLevel: '+15% Faster Auto-Mining' }
+    ];
+
+    let upgradeLevels = {
+      multiMine: 0,
+      luckBoost: 0,
+      coinMulti: 0,
+      autoSpeed: 0
+    };
+
+    function calculateUpgradeCost(upg, level) {
+      let cost = upg.baseCost;
+      for (let l = 0; l < level; l++) {
+        let mult = upg.costMult;
+        if (upg.id === 'multiMine') {
+          if (l < 5) mult = 1.8;
+          else if (l < 15) mult = 1.35;
+          else mult = 1.15;
+        }
+        cost = Math.floor(cost * mult) + (l * 250);
+      }
+      return cost;
+    }
+
+    const allEnchantmentsPool = [
+      { id: 'fortune_1', name: 'Fortune I', cost: 500, type: 'fortune', level: 1, desc: '+25% Extra Coins' },
+      { id: 'fortune_2', name: 'Fortune II', cost: 2500, type: 'fortune', level: 2, desc: '+50% Extra Coins' },
+      { id: 'fortune_3', name: 'Fortune III', cost: 15000, type: 'fortune', level: 3, desc: '+100% Extra Coins' },
+      { id: 'eff_1', name: 'Efficiency I', cost: 400, type: 'efficiency', level: 1, desc: '-15% Mining Cooldown' },
+      { id: 'eff_2', name: 'Efficiency II', cost: 2000, type: 'efficiency', level: 2, desc: '-30% Mining Cooldown' },
+      { id: 'eff_3', name: 'Efficiency III', cost: 10000, type: 'efficiency', level: 3, desc: '-50% Mining Cooldown' },
+      { id: 'unb_1', name: 'Unbreaking I', cost: 1000, type: 'unbreaking', level: 1, desc: '10% Double Coin Chance' },
+      { id: 'unb_2', name: 'Unbreaking II', cost: 5000, type: 'unbreaking', level: 2, desc: '20% Double Coin Chance' },
+      { id: 'unb_3', name: 'Unbreaking III', cost: 25000, type: 'unbreaking', level: 3, desc: '30% Double Coin Chance' },
+      { id: 'luck_1', name: 'Looting I', cost: 2000, type: 'luck', level: 1, desc: '1.1x Rare Luck Boost' },
+      { id: 'luck_2', name: 'Looting II', cost: 12000, type: 'luck', level: 2, desc: '1.25x Rare Luck Boost' },
+      { id: 'luck_3', name: 'Looting III', cost: 60000, type: 'luck', level: 3, desc: '1.5x Rare Luck Boost' },
+      { id: 'greed_1', name: 'Greed I', cost: 3500, type: 'greed', level: 1, desc: '15% Chance for +50 Bonus Coins' },
+      { id: 'greed_2', name: 'Greed II', cost: 18000, type: 'greed', level: 2, desc: '25% Chance for +200 Bonus Coins' },
+      { id: 'mending_1', name: 'Mending I', cost: 45000, type: 'mending', level: 1, desc: '5% Chance for Free Lapis per Mine' }
+    ];
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const audioBuffers = {};
+
+    const soundSources = {
+      mine: './mine.wav',
+      rare: './rare.wav',
+      legendary: './legendary.wav'
+    };
+
+    Object.keys(soundSources).forEach(key => {
+      fetch(soundSources[key])
+        .then(res => res.arrayBuffer())
+        .then(data => audioCtx.decodeAudioData(data))
+        .then(buffer => { audioBuffers[key] = buffer; })
+        .catch(() => {});
+    });
+
+    function playSound(type) {
+      const vol = parseFloat(document.getElementById('volSlider').value);
+      if (vol <= 0 || !audioBuffers[type]) return;
+
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
+      const source = audioCtx.createBufferSource();
+      const gainNode = audioCtx.createGain();
+
+      source.buffer = audioBuffers[type];
+      source.playbackRate.value = 0.90 + Math.random() * 0.20;
+      gainNode.gain.value = vol;
+
+      source.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      source.start(0);
+    }
+
+    window.addEventListener('click', () => {
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }, { once: true });
+
+    const baseTiers = [
+      { id: 't-100000000', label: '1/100,000,000', probability: 0.00000001, class: 'glow-100000000', items: ['xdd'], delay: 1500, sfx: 'legendary', coinRange: [100000000, 500000000] },
+      { id: 't-10000000',  label: '1/10,000,000',  probability: 0.0000001,  class: 'glow-10000000',  items: ['rainbla'], delay: 1200, sfx: 'legendary', coinRange: [10000000, 50000000] },
+      { id: 't-1000000',   label: '1/1,000,000',   probability: 0.000001,   class: 'glow-1000000',   items: ['goldbla', 'lerolero', 'rainblorp'], delay: 1000, sfx: 'legendary', coinRange: [1000000, 5000000] },
+      { id: 't-100000',    label: '1/100,000',     probability: 0.00001,    class: 'glow-100000',    items: ['bla', 'RainbowGoobert', 'maxwell', 'goldlorp'], delay: 700, sfx: 'legendary', coinRange: [100000, 500000] },
+      { id: 't-10000',     label: '1/10,000',      probability: 0.0001,     class: 'glow-10000',     items: ['RainbowGem', 'EnchantedCat', 'glorp'], delay: 500, sfx: 'legendary', coinRange: [10000, 50000] },
+      { id: 't-1000',      label: '1/1,000',       probability: 0.001,      class: 'glow-1000',      items: ['Diamond', 'michael', 'Opal'], delay: 350, sfx: 'rare', coinRange: [1000, 3500] },
+      { id: 't-100',       label: '1/100',         probability: 0.01,       class: 'glow-100',       items: ['Goldge', 'Emeraldge', 'Diamondge'], delay: 200, sfx: 'rare', coinRange: [100, 350] },
+      { id: 't-10',        label: '1/10',          probability: 0.1,        class: 'glow-10',        items: ['Iron', 'Copper', 'Bone'], delay: 100, sfx: 'mine', coinRange: [15, 50] },
+      { id: 't-1',         label: '1/1',           probability: 1.0,        class: 'glow-1',         items: ['Coal', 'Dirt', 'Stone'], delay: 40, sfx: 'mine', coinRange: [1, 10] }
+    ];
+
+    let inventory = {};
+    let coins = 0;
+    let lapis = 0;
+    let autoInterval = null;
+    let currentTheme = 'midnight';
+    let customColor = '#050508';
+
+    let ownedPickaxes = ['woodenpickaxe'];
+    let equippedPickaxe = 'woodenpickaxe';
+    let currentEnchant = null;
+
+    let availableShopEnchants = [];
+    let nextResetTimestamp = 0;
+    const RESET_INTERVAL_MS = 10 * 60 * 1000;
+
+    function loadSavedData() {
+      const savedInv = localStorage.getItem('mine_inventory');
+      if (savedInv) inventory = JSON.parse(savedInv);
+
+      const savedCoins = localStorage.getItem('mine_coins');
+      if (savedCoins) coins = parseInt(savedCoins, 10);
+
+      const savedLapis = localStorage.getItem('mine_lapis');
+      if (savedLapis) lapis = parseInt(savedLapis, 10);
+
+      const savedPicks = localStorage.getItem('mine_picks');
+      if (savedPicks) ownedPickaxes = JSON.parse(savedPicks);
+
+      const savedEquipped = localStorage.getItem('mine_equipped_pick');
+      if (savedEquipped) equippedPickaxe = savedEquipped;
+
+      const savedEnchant = localStorage.getItem('mine_equipped_enchant');
+      if (savedEnchant) currentEnchant = JSON.parse(savedEnchant);
+
+      const savedUpgrades = localStorage.getItem('mine_upgrades');
+      if (savedUpgrades) upgradeLevels = Object.assign(upgradeLevels, JSON.parse(savedUpgrades));
+
+      const savedNextReset = localStorage.getItem('mine_next_reset');
+      if (savedNextReset) nextResetTimestamp = parseInt(savedNextReset, 10);
+
+      const savedShopEnchants = localStorage.getItem('mine_shop_enchants');
+      if (savedShopEnchants) availableShopEnchants = JSON.parse(savedShopEnchants);
+
+      checkOrRotateShop();
+
+      updateCoinsDisplay();
+      updateEquippedDisplay();
+      setupMiningCards();
+
+      const savedVol = localStorage.getItem('mine_volume');
+      if (savedVol !== null) document.getElementById('volSlider').value = savedVol;
+
+      const savedTheme = localStorage.getItem('mine_theme');
+      const savedCustomColor = localStorage.getItem('mine_customColor');
+      if (savedCustomColor) customColor = savedCustomColor;
+
+      if (savedTheme) {
+        let label = 'Midnight';
+        if (savedTheme === 'navy') label = 'Light Navy';
+        if (savedTheme === 'light') label = 'Light';
+        if (savedTheme === 'custom') label = 'Custom Hex';
+        
+        document.getElementById('customPicker').value = customColor;
+        selectTheme(savedTheme, label, false);
+      } else {
+        selectTheme('midnight', 'Midnight', false);
+      }
+
+      const savedAuto = localStorage.getItem('mine_auto');
+      if (savedAuto === 'true') {
+        const btn = document.getElementById('autoBtn');
+        btn.classList.add('active');
+        btn.textContent = 'AUTO: ON';
+        document.getElementById('rollBtn').disabled = true;
+        window.addEventListener('click', () => {
+          if (!autoInterval && localStorage.getItem('mine_auto') === 'true') {
+            restartAutoMine();
+          }
+        }, { once: true });
+      }
+
+      setupEquippedHover();
+      updateFeed();
+      renderShopList();
+      renderUpgradesList();
+      renderEnchantList();
+
+      setInterval(updateEnchantTimer, 1000);
+    }
+
+    function saveInventory() { localStorage.setItem('mine_inventory', JSON.stringify(inventory)); }
+    function saveCoins() { localStorage.setItem('mine_coins', coins); }
+    function saveLapis() { localStorage.setItem('mine_lapis', lapis); }
+    function savePickaxes() {
+      localStorage.setItem('mine_picks', JSON.stringify(ownedPickaxes));
+      localStorage.setItem('mine_equipped_pick', equippedPickaxe);
+    }
+
+    function saveEnchant() {
+      localStorage.setItem('mine_equipped_enchant', JSON.stringify(currentEnchant));
+    }
+
+    function saveUpgrades() {
+      localStorage.setItem('mine_upgrades', JSON.stringify(upgradeLevels));
+    }
+
+    function saveSettings() {
+      localStorage.setItem('mine_volume', document.getElementById('volSlider').value);
+      localStorage.setItem('mine_theme', currentTheme);
+      localStorage.setItem('mine_customColor', document.getElementById('customPicker').value);
+    }
+
+    function updateCoinsDisplay() {
+      document.getElementById('coinsText').textContent = coins.toLocaleString();
+      document.getElementById('lapisCountText').textContent = lapis;
+    }
+
+    function updateEquippedDisplay() {
+      const pickImg = document.getElementById('eqPickImg');
+      const targetSrc = currentEnchant ? `./enchanted${equippedPickaxe}.gif` : `./${equippedPickaxe}.png`;
+      if (pickImg.getAttribute('src') !== targetSrc) {
+        pickImg.src = targetSrc;
+      }
+    }
+
+    function setupMiningCards() {
+      const container = document.getElementById('cardsContainer');
+      container.innerHTML = '';
+      
+      const cardCount = 1 + upgradeLevels.multiMine;
+
+      container.className = 'cards-container';
+      if (cardCount === 2) container.classList.add('multi-2');
+      else if (cardCount === 3) container.classList.add('multi-3');
+      else if (cardCount === 4) container.classList.add('multi-4');
+      else if (cardCount > 4) container.classList.add('multi-many');
+
+      for (let i = 0; i < cardCount; i++) {
+        const card = document.createElement('div');
+        card.className = 'roll-card';
+        card.id = `card-${i}`;
+
+        const img = document.createElement('img');
+        img.className = 'display-img';
+        img.id = `displayImg-${i}`;
+        img.alt = '';
+
+        card.appendChild(img);
+        container.appendChild(card);
+      }
+    }
+
+    function setupEquippedHover() {
+      const eqBox = document.getElementById('equippedBox');
+      eqBox.addEventListener('mouseenter', (e) => {
+        const hc = document.getElementById('hoverCard');
+        const hcName = document.getElementById('hcName');
+        const hcImg = document.getElementById('hcImg');
+        const hcRarity = document.getElementById('hcRarity');
+
+        hcName.textContent = equippedPickaxe;
+
+        if (hcImg.getAttribute('src') !== './enchantbook.gif') {
+          hcImg.src = './enchantbook.gif';
+        }
+
+        if (currentEnchant) {
+          hcRarity.innerHTML = `<span style="color:#00ff66;">${currentEnchant.name || currentEnchant.type}</span><br><span style="color:#798cb8; font-size:0.45rem;">${currentEnchant.desc}</span>`;
+        } else {
+          hcRarity.innerHTML = `<span style="color:#888;">No Enchantment</span>`;
+        }
+        hc.style.display = 'flex';
+        moveHoverCard(e);
+      });
+
+      eqBox.addEventListener('mousemove', moveHoverCard);
+      eqBox.addEventListener('mouseleave', hideHoverCard);
+    }
+
+    function openModal(id) { 
+      document.getElementById(id).classList.add('active'); 
+      if (id === 'shopModal') renderShopList();
+      if (id === 'upgradesModal') renderUpgradesList();
+      if (id === 'enchantModal') renderEnchantList();
+    }
+
+    function closeModal(id) { 
+      document.getElementById(id).classList.remove('active'); 
+      document.getElementById('dropdownOptions').classList.remove('show');
+    }
+
+    function toggleDropdown() {
+      document.getElementById('dropdownOptions').classList.toggle('show');
+    }
+
+    function selectTheme(theme, label, shouldSave = true) {
+      currentTheme = theme;
+      document.getElementById('themeSelected').innerHTML = `<span>${label}</span> ▼`;
+      document.getElementById('dropdownOptions').classList.remove('show');
+      
+      document.body.className = '';
+      const picker = document.getElementById('customPicker');
+
+      if (theme === 'custom') {
+        picker.style.display = 'block';
+        applyCustomColor(picker.value);
+      } else {
+        picker.style.display = 'none';
+        document.body.style.removeProperty('--bg');
+        document.body.style.removeProperty('--panel');
+        document.body.style.removeProperty('--border');
+        if (theme !== 'navy') document.body.classList.add('theme-' + theme);
+      }
+
+      if (shouldSave) saveSettings();
+    }
+
+    function applyCustomColor(hex) {
+      document.body.style.setProperty('--bg', hex);
+      document.body.style.setProperty('--panel', adjustHex(hex, -20));
+      document.body.style.setProperty('--border', adjustHex(hex, 40));
+    }
+
+    function adjustHex(hex, amt) {
+      let num = parseInt(hex.replace('#',''), 16);
+      let r = Math.min(255, Math.max(0, (num >> 16) + amt));
+      let g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amt));
+      let b = Math.min(255, Math.max(0, (num & 0x0000FF) + amt));
+      return `#${(g | (b << 8) | (r << 16)).toString(16).padStart(6, '0')}`;
+    }
+
+    function getMiningSpeedMultiplier() {
+      const pick = pickaxes.find(p => p.id === equippedPickaxe) || pickaxes[0];
+      let effBonus = 1.0;
+      if (currentEnchant && currentEnchant.type === 'efficiency') {
+        effBonus += currentEnchant.level * 0.2;
+      }
+      return pick.speedMultiplier * effBonus;
+    }
+
+    function toggleAuto(shouldSave = true) {
+      const btn = document.getElementById('autoBtn');
+      const rollBtn = document.getElementById('rollBtn');
+
+      if (autoInterval) {
+        clearInterval(autoInterval);
+        autoInterval = null;
+        btn.classList.remove('active');
+        btn.textContent = 'AUTO: OFF';
+        rollBtn.disabled = false;
+        if (shouldSave) localStorage.setItem('mine_auto', 'false');
+      } else {
+        btn.classList.add('active');
+        btn.textContent = 'AUTO: ON';
+        rollBtn.disabled = true;
+        if (shouldSave) localStorage.setItem('mine_auto', 'true');
+        restartAutoMine();
+      }
+    }
+
+    function restartAutoMine() {
+      if (autoInterval) clearInterval(autoInterval);
+      const autoSpeedBonus = 1.0 + (upgradeLevels.autoSpeed * 0.15);
+      const baseDelay = 600;
+      const actualDelay = Math.max(100, Math.floor((baseDelay / getMiningSpeedMultiplier()) / autoSpeedBonus));
+      executeMiningCycle();
+      autoInterval = setInterval(executeMiningCycle, actualDelay);
+    }
+
+    function renderShopList() {
+      const list = document.getElementById('pickaxeShopList');
+      list.innerHTML = '';
+
+      pickaxes.forEach(p => {
+        const item = document.createElement('div');
+        item.className = 'shop-item';
+
+        const isOwned = ownedPickaxes.includes(p.id);
+        const isEquipped = equippedPickaxe === p.id;
+
+        let btnLabel = `$${p.cost.toLocaleString()}`;
+        let btnClass = 'buy-btn';
+        let disabled = false;
+
+        if (isEquipped) {
+          btnLabel = 'EQUIPPED';
+          btnClass = 'buy-btn equipped';
+          disabled = true;
+        } else if (isOwned) {
+          btnLabel = 'EQUIP';
+        } else if (coins < p.cost) {
+          disabled = true;
+        }
+
+        item.innerHTML = `
+          <div class="shop-item-left">
+            <img class="shop-item-img" src="./${p.id}.png" alt="${p.id}" />
+            <div class="shop-item-info">
+              <span class="shop-item-sub">${p.desc}</span>
+            </div>
+          </div>
+          <button class="${btnClass}" ${disabled ? 'disabled' : ''} onclick="handlePickaxeClick('${p.id}')">${btnLabel}</button>
+        `;
+
+        list.appendChild(item);
+      });
+    }
+
+    function handlePickaxeClick(pickId) {
+      const p = pickaxes.find(x => x.id === pickId);
+      if (!p) return;
+
+      if (ownedPickaxes.includes(pickId)) {
+        equippedPickaxe = pickId;
+      } else if (coins >= p.cost) {
+        coins -= p.cost;
+        ownedPickaxes.push(pickId);
+        equippedPickaxe = pickId;
+        saveCoins();
+        updateCoinsDisplay();
+      }
+
+      savePickaxes();
+      updateEquippedDisplay();
+      renderShopList();
+      if (autoInterval) restartAutoMine();
+    }
+
+    function renderUpgradesList() {
+      const list = document.getElementById('upgradesShopList');
+      if (!list) return;
+      list.innerHTML = '';
+
+      upgradesConfig.forEach(upg => {
+        const currentLvl = upgradeLevels[upg.id] || 0;
+        const isMax = currentLvl >= upg.maxLevel;
+        const cost = calculateUpgradeCost(upg, currentLvl);
+        const canAfford = coins >= cost;
+
+        const item = document.createElement('div');
+        item.className = 'shop-item';
+
+        let btnLabel = isMax ? 'MAX' : `$${cost.toLocaleString()}`;
+        let disabled = isMax || !canAfford;
+
+        item.innerHTML = `
+          <div class="shop-item-left">
+            <img class="shop-item-img" src="${upg.icon}" alt="${upg.name}" />
+            <div class="shop-item-info">
+              <span class="shop-item-sub" style="color:#fff; font-size:0.55rem;">${upg.name} (${currentLvl}/${upg.maxLevel})</span>
+              <span class="shop-item-sub">${upg.descPerLevel}</span>
+            </div>
+          </div>
+          <button class="buy-btn" ${disabled ? 'disabled' : ''} onclick="buyUpgrade('${upg.id}')">${btnLabel}</button>
+        `;
+
+        list.appendChild(item);
+      });
+    }
+
+    function buyUpgrade(upgId) {
+      const upg = upgradesConfig.find(u => u.id === upgId);
+      if (!upg) return;
+
+      const currentLvl = upgradeLevels[upgId] || 0;
+      if (currentLvl >= upg.maxLevel) return;
+
+      const cost = calculateUpgradeCost(upg, currentLvl);
+      if (coins >= cost) {
+        coins -= cost;
+        upgradeLevels[upgId] = currentLvl + 1;
+        
+        saveCoins();
+        saveUpgrades();
+        updateCoinsDisplay();
+        renderUpgradesList();
+
+        if (upgId === 'multiMine') {
+          setupMiningCards();
+        }
+        if (upgId === 'autoSpeed' && autoInterval) {
+          restartAutoMine();
+        }
+      }
+    }
+
+    function checkOrRotateShop() {
+      const now = Date.now();
+      if (!nextResetTimestamp || now >= nextResetTimestamp || availableShopEnchants.length < 3) {
+        rotateShopEnchants();
+      }
+    }
+
+    function rotateShopEnchants() {
+      const shuffled = [...allEnchantmentsPool].sort(() => 0.5 - Math.random());
+      availableShopEnchants = shuffled.slice(0, 3);
+      
+      const now = Date.now();
+      nextResetTimestamp = now + RESET_INTERVAL_MS;
+
+      localStorage.setItem('mine_shop_enchants', JSON.stringify(availableShopEnchants));
+      localStorage.setItem('mine_next_reset', nextResetTimestamp);
+      
+      renderEnchantList();
+    }
+
+    function updateEnchantTimer() {
+      const now = Date.now();
+      if (now >= nextResetTimestamp) {
+        rotateShopEnchants();
+      }
+
+      const diff = Math.max(0, nextResetTimestamp - now);
+      const minutes = Math.floor(diff / 60000);
+      const seconds = Math.floor((diff % 60000) / 1000);
+
+      const formattedStr = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+      document.getElementById('enchantTimer').textContent = `RESET IN: ${formattedStr}`;
+    }
+
+    function buyLapis() {
+      if (coins >= 500) {
+        coins -= 500;
+        lapis += 1;
+        saveCoins();
+        saveLapis();
+        updateCoinsDisplay();
+        renderEnchantList();
+      }
+    }
+
+    function renderEnchantList() {
+      const list = document.getElementById('enchantShopList');
+      if (!list) return;
+      list.innerHTML = '';
+
+      availableShopEnchants.forEach(ench => {
+        const item = document.createElement('div');
+        item.className = 'shop-item enchant-item';
+
+        const isCurrentlyEquipped = currentEnchant && currentEnchant.id === ench.id;
+        const canAfford = coins >= ench.cost && lapis >= 1;
+        const disabled = isCurrentlyEquipped || !canAfford;
+
+        item.innerHTML = `
+          <div class="shop-item-left">
+            <img class="shop-item-img" src="./enchantbook.gif" alt="${ench.id}" />
+            <div class="shop-item-info">
+              <span class="shop-item-sub" style="font-size: 0.55rem; color: #fff;">${ench.name || ench.type}</span>
+              <span class="shop-item-sub">${ench.desc}</span>
+            </div>
+          </div>
+          <button class="buy-btn enchant-btn" ${disabled ? 'disabled' : ''} onclick="buyEnchant('${ench.id}')">
+            <img src="./lapis.png" class="btn-icon-img" alt="lapis" />
+            ${isCurrentlyEquipped ? 'EQUIPPED' : `$${ench.cost.toLocaleString()}`}
+          </button>
+        `;
+
+        item.addEventListener('mouseenter', (e) => showEnchantHoverCard(e, ench));
+        item.addEventListener('mousemove', moveHoverCard);
+        item.addEventListener('mouseleave', hideHoverCard);
+
+        list.appendChild(item);
+      });
+    }
+
+    function showEnchantHoverCard(e, ench) {
+      const hc = document.getElementById('hoverCard');
+      const hcName = document.getElementById('hcName');
+      const hcImg = document.getElementById('hcImg');
+      const hcRarity = document.getElementById('hcRarity');
+
+      hcName.textContent = ench.name || ench.type;
+
+      if (hcImg.getAttribute('src') !== './enchantbook.gif') {
+        hcImg.src = './enchantbook.gif';
+      }
+      hcRarity.innerHTML = `<span style="color:#00ff66;">${ench.name || ench.type}</span><br><span style="color:#798cb8; font-size:0.45rem;">${ench.desc}</span>`;
+      hc.style.display = 'flex';
+      moveHoverCard(e);
+    }
+
+    function buyEnchant(enchId) {
+      const ench = availableShopEnchants.find(e => e.id === enchId);
+      if (!ench) return;
+
+      if (coins >= ench.cost && lapis >= 1) {
+        coins -= ench.cost;
+        lapis -= 1;
+        currentEnchant = ench;
+
+        saveCoins();
+        saveLapis();
+        saveEnchant();
+        updateCoinsDisplay();
+        updateEquippedDisplay();
+        renderEnchantList();
+
+        if (autoInterval) restartAutoMine();
+      }
+    }
+
+    function updateFeed() {
+      const feed = document.getElementById('leftFeed');
+
+      baseTiers.forEach(tier => {
+        const ownedInTier = tier.items.filter(item => inventory[item] > 0);
+        if (ownedInTier.length === 0) return;
+
+        let section = document.getElementById(`sec-${tier.id}`);
+        if (!section) {
+          section = document.createElement('div');
+          section.id = `sec-${tier.id}`;
+          section.className = 'tier-section';
+
+          const header = document.createElement('div');
+          header.className = `tier-header ${tier.id}`;
+          header.innerHTML = `<span>${tier.label}</span>`;
+          section.appendChild(header);
+
+          const grid = document.createElement('div');
+          grid.className = 'feed-items-grid';
+          grid.id = `grid-${tier.id}`;
+          section.appendChild(grid);
+        }
+
+        feed.appendChild(section);
+
+        const grid = document.getElementById(`grid-${tier.id}`);
+
+        ownedInTier.forEach(item => {
+          let itemEl = document.getElementById(`item-${item}`);
+          if (!itemEl) {
+            itemEl = document.createElement('div');
+            itemEl.id = `item-${item}`;
+            itemEl.className = 'feed-item';
+            itemEl.innerHTML = `
+              <img class="emote-img" src="${items[item]}" alt="${item}" onerror="this.style.opacity='0.2'" />
+              <span class="feed-count" id="count-${item}">x0</span>
+            `;
+
+            itemEl.addEventListener('mouseenter', (e) => showHoverCard(e, item, tier));
+            itemEl.addEventListener('mousemove', moveHoverCard);
+            itemEl.addEventListener('mouseleave', hideHoverCard);
+
+            grid.appendChild(itemEl);
+          }
+
+          const countEl = document.getElementById(`count-${item}`);
+          if (countEl) {
+            countEl.textContent = `x${inventory[item]}`;
+          }
+        });
+      });
+    }
+
+    const hc = document.getElementById('hoverCard');
+
+    function showHoverCard(e, item, tier) {
+      const hcName = document.getElementById('hcName');
+      hcName.textContent = item;
+
+      const hcImg = document.getElementById('hcImg');
+      if (hcImg.getAttribute('src') !== items[item]) {
+        hcImg.src = items[item];
+      }
+
+      const hcRarity = document.getElementById('hcRarity');
+      hcRarity.textContent = tier.label;
+      hcRarity.style.color = getComputedStyle(document.documentElement).getPropertyValue(`--${tier.id.replace('t-', 't')}`);
+
+      hc.style.display = 'flex';
+      moveHoverCard(e);
+    }
+
+    function moveHoverCard(e) {
+      const hcRect = hc.getBoundingClientRect();
+      let left = e.clientX + 15;
+      let top = e.clientY + 15;
+
+      if (left + hcRect.width > window.innerWidth) {
+        left = e.clientX - hcRect.width - 15;
+      }
+
+      if (top + hcRect.height > window.innerHeight) {
+        top = e.clientY - hcRect.height - 15;
+      }
+
+      hc.style.left = `${left}px`;
+      hc.style.top = `${top}px`;
+    }
+
+    function hideHoverCard() { hc.style.display = 'none'; }
+    function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function mine() {
+      if (autoInterval) return;
+      executeMiningCycle();
+    }
+
+    function executeMiningCycle() {
+      const cardCount = 1 + upgradeLevels.multiMine;
+      const btn = document.getElementById('rollBtn');
+      btn.disabled = true;
+
+      let totalGainedCoins = 0;
+      let highestSfx = 'mine';
+      const sfxPriority = { 'mine': 1, 'rare': 2, 'legendary': 3 };
+
+      let luckBoost = 1.0 + (upgradeLevels.luckBoost * 0.10);
+      if (currentEnchant && currentEnchant.type === 'luck') {
+        const luckMultipliers = [1.0, 1.1, 1.25, 1.5];
+        luckBoost *= luckMultipliers[currentEnchant.level];
+      }
+
+      let longestDelay = 0;
+
+      for (let i = 0; i < cardCount; i++) {
+        const card = document.getElementById(`card-${i}`);
+        const img = document.getElementById(`displayImg-${i}`);
+        if (!card || !img) continue;
+
+        img.classList.remove('active', 'pulse-reveal');
+
+        const r = Math.random();
+        let selectedItem = '';
+        let selectedTier = null;
+
+        for (const tier of baseTiers) {
+          const adjustedProb = Math.min(1.0, tier.probability * luckBoost);
+          if (r < adjustedProb) {
+            selectedItem = pickRandom(tier.items);
+            selectedTier = tier;
+            break;
+          }
+        }
+
+        const totalSpeed = getMiningSpeedMultiplier();
+        const actualDelay = Math.max(20, Math.floor(selectedTier.delay / totalSpeed));
+        if (actualDelay > longestDelay) longestDelay = actualDelay;
+
+        card.style.setProperty('--shake-dur', `${Math.max(0.02, actualDelay / 2500)}s`);
+        card.className = 'roll-card rolling';
+
+        setTimeout(() => {
+          inventory[selectedItem] = (inventory[selectedItem] || 0) + 1;
+          
+          let gainedCoins = getRandomInt(selectedTier.coinRange[0], selectedTier.coinRange[1]);
+
+          const coinMultiplier = 1.0 + (upgradeLevels.coinMulti * 0.25);
+          gainedCoins = Math.floor(gainedCoins * coinMultiplier);
+
+          if (currentEnchant && currentEnchant.type === 'fortune') {
+            const fortuneMultipliers = [1.0, 1.25, 1.5, 2.0];
+            gainedCoins = Math.floor(gainedCoins * fortuneMultipliers[currentEnchant.level]);
+          }
+
+          if (currentEnchant && currentEnchant.type === 'unbreaking') {
+            const unbreakingChances = [0, 0.1, 0.2, 0.3];
+            if (Math.random() < unbreakingChances[currentEnchant.level]) {
+              gainedCoins *= 2;
+            }
+          }
+
+          if (currentEnchant && currentEnchant.type === 'greed') {
+            const chance = currentEnchant.level === 1 ? 0.15 : 0.25;
+            const bonus = currentEnchant.level === 1 ? 50 : 200;
+            if (Math.random() < chance) gainedCoins += bonus;
+          }
+
+          if (currentEnchant && currentEnchant.type === 'mending') {
+            if (Math.random() < 0.05) {
+              lapis += 1;
+              saveLapis();
+            }
+          }
+
+          totalGainedCoins += gainedCoins;
+          if (sfxPriority[selectedTier.sfx] > sfxPriority[highestSfx]) {
+            highestSfx = selectedTier.sfx;
+          }
+
+          card.className = 'roll-card ' + selectedTier.class;
+
+          if (img.getAttribute('data-item') !== selectedItem) {
+            img.src = items[selectedItem];
+            img.setAttribute('data-item', selectedItem);
+          }
+
+          img.classList.add('active', 'pulse-reveal');
+        }, actualDelay);
+      }
+
+      setTimeout(() => {
+        coins += totalGainedCoins;
+        saveInventory();
+        saveCoins();
+        updateCoinsDisplay();
+        updateFeed();
+
+        playSound(highestSfx);
+        if (!autoInterval) {
+          btn.disabled = false;
+        }
+      }, longestDelay + 10);
+    }
+
+    loadSavedData();
+  </script>
+</body>
+</html>
