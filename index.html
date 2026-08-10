@@ -177,7 +177,7 @@
       background: var(--panel);
       border: 4px solid var(--border);
       padding: 24px;
-      width: 440px;
+      width: 460px;
       max-height: 85vh;
       overflow-y: auto;
       display: flex;
@@ -266,6 +266,15 @@
       border: 2px solid #fff;
       padding: 8px 12px;
       font-size: 0.55rem;
+      cursor: pointer;
+    }
+
+    .action-btn-small {
+      background: #bd00ff;
+      color: #fff;
+      border: 2px solid #fff;
+      padding: 4px 8px;
+      font-size: 0.45rem;
       cursor: pointer;
     }
 
@@ -426,6 +435,31 @@
       background: #00bfff;
       color: #000;
       border-color: #fff;
+    }
+
+    /* Sorting Bar for Enchant Index */
+    .sort-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(0,0,0,0.25);
+      border: 2px solid var(--border);
+      padding: 8px;
+    }
+
+    .sort-bar label {
+      font-size: 0.5rem;
+      color: var(--text-dim);
+    }
+
+    .sort-select {
+      background: var(--bg);
+      color: #fff;
+      border: 1px solid var(--border);
+      padding: 4px 8px;
+      font-size: 0.5rem;
+      font-family: inherit;
+      cursor: pointer;
     }
 
     /* Retro Left Feed */
@@ -798,6 +832,7 @@
     <div class="modal-window enchant-modal">
       <div class="modal-title">
         <span>ENCHANTING TABLE</span>
+        <button class="action-btn-small" onclick="openModal('enchantIndexModal')">INDEX</button>
       </div>
       <div class="enchant-timer" id="enchantTimer">RESET IN: 10:00</div>
       
@@ -811,6 +846,29 @@
 
       <div class="shop-list" id="enchantShopList"></div>
       <button class="close-btn" onclick="closeModal('enchantModal')">CLOSE</button>
+    </div>
+  </div>
+
+  <!-- Enchantment Index Modal -->
+  <div class="modal-overlay" id="enchantIndexModal">
+    <div class="modal-window enchant-modal">
+      <div class="modal-title">
+        <span>ENCHANTMENT INDEX</span>
+      </div>
+      
+      <div class="sort-bar">
+        <label for="enchantTierSort">FILTER BY TIER:</label>
+        <select id="enchantTierSort" class="sort-select" onchange="renderEnchantIndex()">
+          <option value="all">ALL TIERS</option>
+          <option value="1">TIER I</option>
+          <option value="2">TIER II</option>
+          <option value="3">TIER III</option>
+          <option value="curse">CURSES</option>
+        </select>
+      </div>
+
+      <div class="shop-list" id="enchantIndexList"></div>
+      <button class="close-btn" onclick="closeModal('enchantIndexModal')">CLOSE</button>
     </div>
   </div>
 
@@ -871,11 +929,12 @@
       { id: 'netheritepickaxe', cost: 250000,  speedMultiplier: 4.5,  desc: '4.50x Speed' }
     ];
 
+    /* Increased Max Levels for Progression Longevity */
     const upgradesConfig = [
-      { id: 'multiMine', name: 'Multi-Mine', icon: './upgrades.png', baseCost: 500, costMult: 1.8, maxLevel: 50, descPerLevel: '+1 Mining Square per action' },
-      { id: 'luckBoost', name: 'Extra Luck', icon: './upgrades.png', baseCost: 500, costMult: 2.2, maxLevel: 10, descPerLevel: '+25% Rare Find Chance' },
-      { id: 'coinMulti', name: 'Coin Multiplier', icon: './upgrades.png', baseCost: 750, costMult: 2.2, maxLevel: 10, descPerLevel: '+50% Coins Earned' },
-      { id: 'autoSpeed', name: 'Auto-Speed', icon: './upgrades.png', baseCost: 1500, costMult: 2.5, maxLevel: 5, descPerLevel: '+15% Faster Auto-Mining' }
+      { id: 'multiMine', name: 'Multi-Mine', icon: './upgrades.png', baseCost: 500, costMult: 1.8, maxLevel: 100, descPerLevel: '+1 Mining Square per action' },
+      { id: 'luckBoost', name: 'Extra Luck', icon: './upgrades.png', baseCost: 500, costMult: 2.2, maxLevel: 50, descPerLevel: '+25% Rare Find Chance' },
+      { id: 'coinMulti', name: 'Coin Multiplier', icon: './upgrades.png', baseCost: 750, costMult: 2.2, maxLevel: 50, descPerLevel: '+50% Coins Earned' },
+      { id: 'autoSpeed', name: 'Auto-Speed', icon: './upgrades.png', baseCost: 1500, costMult: 2.5, maxLevel: 25, descPerLevel: '+15% Faster Auto-Mining' }
     ];
 
     let upgradeLevels = {
@@ -925,8 +984,8 @@
       { id: 'thorns_1', name: 'Thorns I', cost: 7000, type: 'thorns', level: 1, desc: 'Grants +5 Coins every time a Common Block lands' },
       { id: 'frost_1', name: 'Frost Walker', cost: 35000, type: 'frost', level: 1, desc: 'Guarantees minimum +25 Coins per mine' },
       { id: 'infinity_1', name: 'Infinity I', cost: 100000, type: 'infinity', level: 1, desc: '1% Chance to Instantly Gain 10,000 Coins' },
-      { id: 'curse_vanish', name: 'Curse of Vanishing', cost: 100, type: 'curse_vanish', level: 1, desc: '3.0x Luck, but 50% Chance to Gain 0 Coins' },
-      { id: 'curse_bind', name: 'Curse of Binding', cost: 100, type: 'curse_bind', level: 1, desc: '2.0x Coins, but Pickaxe Speed is halved' }
+      { id: 'curse_vanish', name: 'Curse of Vanishing', cost: 100, type: 'curse_vanish', level: 0, desc: '3.0x Luck, but 50% Chance to Gain 0 Coins' },
+      { id: 'curse_bind', name: 'Curse of Binding', cost: 100, type: 'curse_bind', level: 0, desc: '2.0x Coins, but Pickaxe Speed is halved' }
     ];
 
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1195,6 +1254,7 @@
       if (id === 'shopModal') renderShopList();
       if (id === 'upgradesModal') renderUpgradesList();
       if (id === 'enchantModal') renderEnchantList();
+      if (id === 'enchantIndexModal') renderEnchantIndex();
     }
 
     function closeModal(id) { 
@@ -1476,6 +1536,54 @@
             <img src="./lapis.png" class="btn-icon-img" alt="lapis" />
             ${isCurrentlyEquipped ? 'EQUIPPED' : `$${ench.cost.toLocaleString()}`}
           </button>
+        `;
+
+        item.addEventListener('mouseenter', (e) => showEnchantHoverCard(e, ench));
+        item.addEventListener('mousemove', moveHoverCard);
+        item.addEventListener('mouseleave', hideHoverCard);
+
+        list.appendChild(item);
+      });
+    }
+
+    /* Render Enchantment Index with Filter Options */
+    function renderEnchantIndex() {
+      const list = document.getElementById('enchantIndexList');
+      const sortVal = document.getElementById('enchantTierSort').value;
+      if (!list) return;
+      list.innerHTML = '';
+
+      let filtered = [...allEnchantmentsPool];
+
+      if (sortVal === '1') {
+        filtered = filtered.filter(e => e.level === 1);
+      } else if (sortVal === '2') {
+        filtered = filtered.filter(e => e.level === 2);
+      } else if (sortVal === '3') {
+        filtered = filtered.filter(e => e.level === 3);
+      } else if (sortVal === 'curse') {
+        filtered = filtered.filter(e => e.type.startsWith('curse_'));
+      }
+
+      filtered.forEach(ench => {
+        const item = document.createElement('div');
+        item.className = 'shop-item enchant-item';
+
+        const isEquipped = currentEnchant && currentEnchant.id === ench.id;
+        const isCurse = ench.type.startsWith('curse_');
+        const levelTag = isCurse ? 'CURSE' : `TIER ${ench.level}`;
+
+        item.innerHTML = `
+          <div class="shop-item-left">
+            <img class="shop-item-img" src="./enchantbook.gif" alt="${ench.id}" />
+            <div class="shop-item-info">
+              <span class="shop-item-sub" style="font-size: 0.55rem; color: ${isCurse ? '#ff0055' : '#00ff66'};">
+                ${ench.name || ench.type} (${levelTag})
+              </span>
+              <span class="shop-item-sub">${ench.desc}</span>
+            </div>
+          </div>
+          ${isEquipped ? '<span style="font-size:0.5rem; color:#00ff66;">EQUIPPED</span>' : ''}
         `;
 
         item.addEventListener('mouseenter', (e) => showEnchantHoverCard(e, ench));
