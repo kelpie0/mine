@@ -82,44 +82,9 @@
       top: 16px;
       right: 16px;
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       gap: 10px;
       z-index: 20;
-    }
-
-    .currencies-container {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    /* Currency Display */
-    .coins-display {
-      height: 42px;
-      background: var(--panel);
-      border: 2px solid var(--border);
-      padding: 0 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 4px 0 rgba(0,0,0,0.3);
-    }
-
-    .coins-display img {
-      width: 20px;
-      height: 20px;
-      object-fit: contain;
-    }
-
-    .coins-text {
-      font-size: 0.65rem;
-      color: #ffd700;
-      text-shadow: 0 0 6px rgba(255, 215, 0, 0.4);
-    }
-
-    .plat-text {
-      color: #e5e4e2;
-      text-shadow: 0 0 6px rgba(229, 228, 226, 0.6);
     }
 
     .icon-btn {
@@ -145,6 +110,42 @@
     .icon-btn:active {
       transform: translateY(2px);
       box-shadow: none;
+    }
+
+    /* Currency Display */
+    .coins-display-container {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .coins-display {
+      height: 42px;
+      background: var(--panel);
+      border: 2px solid var(--border);
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.3);
+    }
+
+    .coins-display img {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+    }
+
+    .coins-text {
+      font-size: 0.65rem;
+      color: #ffd700;
+      text-shadow: 0 0 6px rgba(255, 215, 0, 0.4);
+    }
+
+    .plat-coins-text {
+      font-size: 0.65rem;
+      color: #e5e4e2;
+      text-shadow: 0 0 6px rgba(229, 228, 226, 0.6);
     }
 
     /* Bottom Left Equipped Pickaxe Display */
@@ -188,7 +189,7 @@
       background: var(--panel);
       border: 4px solid var(--border);
       padding: 24px;
-      width: 480px;
+      width: 460px;
       max-height: 85vh;
       overflow-y: auto;
       display: flex;
@@ -296,11 +297,6 @@
       gap: 10px;
     }
 
-    .shop-divider {
-      margin: 8px 0;
-      border-top: 2px dashed var(--border);
-    }
-
     .shop-item {
       background: rgba(0,0,0,0.3);
       border: 2px solid var(--border);
@@ -309,7 +305,6 @@
       justify-content: space-between;
       align-items: center;
       gap: 10px;
-      position: relative;
     }
 
     .shop-item-left {
@@ -325,17 +320,15 @@
     }
 
     .shop-item-img {
-      width: 100%;
-      height: 100%;
+      width: 32px;
+      height: 32px;
       object-fit: contain;
     }
 
-    .lock-overlay {
+    .shop-lock-overlay {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       object-fit: contain;
       z-index: 2;
     }
@@ -417,7 +410,7 @@
       color: #fff;
     }
 
-    /* Enchanting Table Theme */
+    /* Enchantment Table Theme */
     .enchant-modal {
       background: var(--panel);
       border-color: var(--border);
@@ -750,15 +743,14 @@
 
   <!-- Top Action Bar -->
   <div class="top-bar">
-    <div class="currencies-container">
+    <div class="coins-display-container">
       <div class="coins-display">
         <img src="./coin.png" alt="coin" />
         <span class="coins-text" id="coinsText">0</span>
       </div>
-
       <div class="coins-display" id="platDisplay" style="display: none;">
         <img src="./platinumcoin.png" alt="platinum coin" />
-        <span class="coins-text plat-text" id="platCoinsText">0</span>
+        <span class="plat-coins-text" id="platCoinsText">0</span>
       </div>
     </div>
 
@@ -961,34 +953,34 @@
     };
 
     const pickaxes = [
-      { id: 'woodenpickaxe',    cost: 0,       currency: 'gold',     speedMultiplier: 1.0,  luckBonus: 1.0, desc: '1.0x Speed' },
-      { id: 'stonepickaxe',     cost: 250,     currency: 'gold',     speedMultiplier: 1.25, luckBonus: 1.0, desc: '1.25x Speed' },
-      { id: 'ironpickaxe',      cost: 1500,    currency: 'gold',     speedMultiplier: 1.6,  luckBonus: 1.0, desc: '1.60x Speed' },
-      { id: 'goldenpickaxe',    cost: 8000,    currency: 'gold',     speedMultiplier: 2.2,  luckBonus: 1.0, desc: '2.20x Speed' },
-      { id: 'diamondpickaxe',   cost: 50000,   currency: 'gold',     speedMultiplier: 3.0,  luckBonus: 1.0, desc: '3.00x Speed' },
-      { id: 'netheritepickaxe', cost: 250000,  currency: 'gold',     speedMultiplier: 4.5,  luckBonus: 1.0, desc: '4.50x Speed' },
-      { id: 'ruby',             cost: 100000,  currency: 'platinum', speedMultiplier: 7.0,  luckBonus: 2.5, desc: '7.0x Speed, 2.5x Luck' },
-      { id: 'sapphire',         cost: 1000000, currency: 'platinum', speedMultiplier: 12.0, luckBonus: 5.0, desc: '12.0x Speed, 5.0x Luck' }
+      { id: 'woodenpickaxe',    cost: 0,       currency: 'coins',    speedMultiplier: 1.0,  luckBonus: 0,   desc: '1.0x Speed' },
+      { id: 'stonepickaxe',     cost: 250,     currency: 'coins',    speedMultiplier: 1.25, luckBonus: 0,   desc: '1.25x Speed' },
+      { id: 'ironpickaxe',      cost: 1500,    currency: 'coins',    speedMultiplier: 1.6,  luckBonus: 0,   desc: '1.60x Speed' },
+      { id: 'goldenpickaxe',    cost: 8000,    currency: 'coins',    speedMultiplier: 2.2,  luckBonus: 0,   desc: '2.20x Speed' },
+      { id: 'diamondpickaxe',   cost: 50000,   currency: 'coins',    speedMultiplier: 3.0,  luckBonus: 0,   desc: '3.00x Speed' },
+      { id: 'netheritepickaxe', cost: 250000,  currency: 'coins',    speedMultiplier: 4.5,  luckBonus: 0,   desc: '4.50x Speed' },
+      { id: 'ruby',             cost: 100000,  currency: 'platinum', speedMultiplier: 6.0,  luckBonus: 0.5, desc: '6.00x Speed, +0.5x Luck' },
+      { id: 'sapphire',         cost: 1000000, currency: 'platinum', speedMultiplier: 8.5,  luckBonus: 1.2, desc: '8.50x Speed, +1.2x Luck' }
     ];
 
+    /* Increased Max Levels for Progression Longevity */
     const upgradesConfig = [
-      { id: 'unlockPlatinum', name: 'Unlock Platinum Coins', icon: './platinumcoin.png', baseCost: 1000000, costMult: 1, maxLevel: 1, descPerLevel: '0.1% chance for Platinum coins on mine' },
-      { id: 'multiMine', name: 'Multi-Mine', icon: './upgrades.png', baseCost: 500, costMult: 1.8, maxLevel: 100, descPerLevel: '+1 Mining Square per action' },
-      { id: 'luckBoost', name: 'Extra Luck', icon: './upgrades.png', baseCost: 500, costMult: 2.2, maxLevel: 50, descPerLevel: '+25% Rare Find Chance' },
-      { id: 'coinMulti', name: 'Coin Multiplier', icon: './upgrades.png', baseCost: 750, costMult: 2.2, maxLevel: 50, descPerLevel: '+50% Coins Earned' },
-      { id: 'autoSpeed', name: 'Auto-Speed', icon: './upgrades.png', baseCost: 1500, costMult: 2.5, maxLevel: 25, descPerLevel: '+15% Faster Auto-Mining' }
+      { id: 'multiMine',      name: 'Multi-Mine',            icon: './upgrades.png',     baseCost: 500,     costMult: 1.8, maxLevel: 100, descPerLevel: '+1 Mining Square per action' },
+      { id: 'luckBoost',      name: 'Extra Luck',            icon: './upgrades.png',     baseCost: 500,     costMult: 2.2, maxLevel: 50,  descPerLevel: '+25% Rare Find Chance' },
+      { id: 'coinMulti',      name: 'Coin Multiplier',       icon: './upgrades.png',     baseCost: 750,     costMult: 2.2, maxLevel: 50,  descPerLevel: '+50% Coins Earned' },
+      { id: 'autoSpeed',      name: 'Auto-Speed',            icon: './upgrades.png',     baseCost: 1500,    costMult: 2.5, maxLevel: 25,  descPerLevel: '+15% Faster Auto-Mining' },
+      { id: 'unlockPlatinum', name: 'Unlock Platinum Coins', icon: './platinumcoin.png', baseCost: 1000000, costMult: 1.0, maxLevel: 1,   descPerLevel: 'Unlocks Platinum currency (0.1% to drop)' }
     ];
 
     let upgradeLevels = {
-      unlockPlatinum: 0,
       multiMine: 0,
       luckBoost: 0,
       coinMulti: 0,
-      autoSpeed: 0
+      autoSpeed: 0,
+      unlockPlatinum: 0
     };
 
     function calculateUpgradeCost(upg, level) {
-      if (upg.id === 'unlockPlatinum') return upg.baseCost;
       let cost = upg.baseCost;
       for (let l = 0; l < level; l++) {
         let mult = upg.costMult;
@@ -1104,8 +1096,11 @@
     const RESET_INTERVAL_MS = 10 * 60 * 1000;
 
     function getLuckMultiplier() {
-      const pick = pickaxes.find(p => p.id === equippedPickaxe) || pickaxes[0];
-      let luck = (1.0 + (upgradeLevels.luckBoost * 0.25)) * (pick.luckBonus || 1.0);
+      let luck = 1.0 + (upgradeLevels.luckBoost * 0.25);
+      const equippedPick = pickaxes.find(p => p.id === equippedPickaxe);
+      if (equippedPick && equippedPick.luckBonus) {
+        luck += equippedPick.luckBonus;
+      }
       if (currentEnchant && currentEnchant.type === 'luck') {
         const luckMultipliers = [1.0, 1.1, 1.25, 1.5];
         luck *= luckMultipliers[currentEnchant.level];
@@ -1211,7 +1206,7 @@
     function saveInventory() { localStorage.setItem('mine_inventory', JSON.stringify(inventory)); }
     function saveCoins() { 
       localStorage.setItem('mine_coins', coins); 
-      localStorage.setItem('mine_plat_coins', platCoins); 
+      localStorage.setItem('mine_plat_coins', platCoins);
     }
     function saveLapis() { localStorage.setItem('mine_lapis', lapis); }
     function savePickaxes() {
@@ -1230,14 +1225,15 @@
     function updateCoinsDisplay() {
       document.getElementById('coinsText').textContent = coins.toLocaleString();
       document.getElementById('platCoinsText').textContent = platCoins.toLocaleString();
-      document.getElementById('lapisCountText').textContent = lapis;
-
-      const platDisp = document.getElementById('platDisplay');
+      
+      const platDisplay = document.getElementById('platDisplay');
       if (upgradeLevels.unlockPlatinum > 0) {
-        platDisp.style.display = 'flex';
+        platDisplay.style.display = 'flex';
       } else {
-        platDisp.style.display = 'none';
+        platDisplay.style.display = 'none';
       }
+
+      document.getElementById('lapisCountText').textContent = lapis;
     }
 
     function updateEquippedDisplay() {
@@ -1407,25 +1403,17 @@
       const list = document.getElementById('pickaxeShopList');
       list.innerHTML = '';
 
-      const isPlatinumUnlocked = upgradeLevels.unlockPlatinum > 0;
+      const isPlatUnlocked = upgradeLevels.unlockPlatinum > 0;
 
-      pickaxes.forEach((p, idx) => {
-        if (idx === 6) {
-          const divider = document.createElement('div');
-          divider.className = 'shop-divider';
-          list.appendChild(divider);
-        }
-
+      pickaxes.forEach(p => {
         const item = document.createElement('div');
         item.className = 'shop-item';
 
         const isOwned = ownedPickaxes.includes(p.id);
         const isEquipped = equippedPickaxe === p.id;
-        const isPlatItem = p.currency === 'platinum';
-        const isLockedByUnlocks = isPlatItem && !isPlatinumUnlocked;
+        const isLockedCurrency = p.currency === 'platinum' && !isPlatUnlocked;
 
-        let iconSrc = isPlatItem ? './platinumcoin.png' : '';
-        let btnLabel = p.cost === 0 ? 'FREE' : `${p.cost.toLocaleString()}`;
+        let btnLabel = p.currency === 'platinum' ? `${p.cost.toLocaleString()} Plat` : `$${p.cost.toLocaleString()}`;
         let btnClass = 'buy-btn';
         let disabled = false;
 
@@ -1435,32 +1423,25 @@
           disabled = true;
         } else if (isOwned) {
           btnLabel = 'EQUIP';
-          iconSrc = '';
-        } else if (isLockedByUnlocks) {
+        } else if (isLockedCurrency) {
           disabled = true;
-        } else if (isPlatItem && platCoins < p.cost) {
+        } else if (p.currency === 'platinum' && platCoins < p.cost) {
           disabled = true;
-        } else if (!isPlatItem && coins < p.cost) {
+        } else if (p.currency === 'coins' && coins < p.cost) {
           disabled = true;
         }
-
-        const iconHtml = iconSrc ? `<img src="${iconSrc}" class="btn-icon-img" alt="currency" />` : '';
-        const lockOverlay = isLockedByUnlocks ? `<img src="./lock.png" class="lock-overlay" alt="locked" />` : '';
 
         item.innerHTML = `
           <div class="shop-item-left">
             <div class="shop-item-img-container">
               <img class="shop-item-img" src="./${p.id}.png" alt="${p.id}" />
-              ${lockOverlay}
+              ${isLockedCurrency ? '<img class="shop-lock-overlay" src="./lock.png" alt="locked" />' : ''}
             </div>
             <div class="shop-item-info">
               <span class="shop-item-sub">${p.desc}</span>
             </div>
           </div>
-          <button class="${btnClass}" ${disabled ? 'disabled' : ''} onclick="handlePickaxeClick('${p.id}')">
-            ${iconHtml}
-            ${btnLabel}
-          </button>
+          <button class="${btnClass}" ${disabled ? 'disabled' : ''} onclick="handlePickaxeClick('${p.id}')">${btnLabel}</button>
         `;
 
         list.appendChild(item);
@@ -1473,14 +1454,14 @@
 
       if (ownedPickaxes.includes(pickId)) {
         equippedPickaxe = pickId;
-      } else if (p.currency === 'platinum' && upgradeLevels.unlockPlatinum > 0 && platCoins >= p.cost) {
-        platCoins -= p.cost;
+      } else if (p.currency === 'coins' && coins >= p.cost) {
+        coins -= p.cost;
         ownedPickaxes.push(pickId);
         equippedPickaxe = pickId;
         saveCoins();
         updateCoinsDisplay();
-      } else if (p.currency === 'gold' && coins >= p.cost) {
-        coins -= p.cost;
+      } else if (p.currency === 'platinum' && upgradeLevels.unlockPlatinum > 0 && platCoins >= p.cost) {
+        platCoins -= p.cost;
         ownedPickaxes.push(pickId);
         equippedPickaxe = pickId;
         saveCoins();
@@ -1541,13 +1522,15 @@
         saveUpgrades();
         updateCoinsDisplay();
         renderUpgradesList();
-        renderShopList();
 
         if (upgId === 'multiMine') {
           setupMiningCards();
         }
         if (upgId === 'autoSpeed' && autoInterval) {
           restartAutoMine();
+        }
+        if (upgId === 'unlockPlatinum') {
+          renderShopList();
         }
       }
     }
@@ -1874,6 +1857,10 @@
             addAmount = 2;
           }
           inventory[selectedItem] = (inventory[selectedItem] || 0) + addAmount;
+
+          if (upgradeLevels.unlockPlatinum > 0 && Math.random() < 0.001) {
+            totalGainedPlat += 1;
+          }
           
           let gainedCoins = getRandomInt(selectedTier.coinRange[0], selectedTier.coinRange[1]);
 
@@ -1933,10 +1920,6 @@
             }
           }
 
-          if (upgradeLevels.unlockPlatinum > 0 && Math.random() < 0.001) {
-            totalGainedPlat += 1;
-          }
-
           totalGainedCoins += gainedCoins;
           if (sfxPriority[selectedTier.sfx] > sfxPriority[highestSfx]) {
             highestSfx = selectedTier.sfx;
@@ -1955,7 +1938,9 @@
 
       setTimeout(() => {
         coins += totalGainedCoins;
-        platCoins += totalGainedPlat;
+        if (upgradeLevels.unlockPlatinum > 0) {
+          platCoins += totalGainedPlat;
+        }
         saveInventory();
         saveCoins();
         updateCoinsDisplay();
