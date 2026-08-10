@@ -953,23 +953,26 @@
     };
 
     const pickaxes = [
-      { id: 'woodenpickaxe',    cost: 0,       currency: 'coins',    speedMultiplier: 1.0,  luckBonus: 0,   desc: '1.0x Speed' },
-      { id: 'stonepickaxe',     cost: 250,     currency: 'coins',    speedMultiplier: 1.25, luckBonus: 0,   desc: '1.25x Speed' },
-      { id: 'ironpickaxe',      cost: 1500,    currency: 'coins',    speedMultiplier: 1.6,  luckBonus: 0,   desc: '1.60x Speed' },
-      { id: 'goldenpickaxe',    cost: 8000,    currency: 'coins',    speedMultiplier: 2.2,  luckBonus: 0,   desc: '2.20x Speed' },
-      { id: 'diamondpickaxe',   cost: 50000,   currency: 'coins',    speedMultiplier: 3.0,  luckBonus: 0,   desc: '3.00x Speed' },
-      { id: 'netheritepickaxe', cost: 250000,  currency: 'coins',    speedMultiplier: 4.5,  luckBonus: 0,   desc: '4.50x Speed' },
-      { id: 'ruby',             cost: 100000,  currency: 'platinum', speedMultiplier: 6.0,  luckBonus: 0.5, desc: '6.00x Speed, +0.5x Luck' },
-      { id: 'sapphire',         cost: 1000000, currency: 'platinum', speedMultiplier: 8.5,  luckBonus: 1.2, desc: '8.50x Speed, +1.2x Luck' }
+      { id: 'woodenpickaxe',    cost: 0,          currency: 'coins',    speedMultiplier: 1.0,  luckBonus: 0,   desc: '1.0x Speed' },
+      { id: 'stonepickaxe',     cost: 250,        currency: 'coins',    speedMultiplier: 1.25, luckBonus: 0,   desc: '1.25x Speed' },
+      { id: 'ironpickaxe',      cost: 1500,       currency: 'coins',    speedMultiplier: 1.6,  luckBonus: 0,   desc: '1.60x Speed' },
+      { id: 'goldenpickaxe',    cost: 8000,       currency: 'coins',    speedMultiplier: 2.2,  luckBonus: 0,   desc: '2.20x Speed' },
+      { id: 'diamondpickaxe',   cost: 50000,      currency: 'coins',    speedMultiplier: 3.0,  luckBonus: 0,   desc: '3.00x Speed' },
+      { id: 'netheritepickaxe', cost: 250000,     currency: 'coins',    speedMultiplier: 4.5,  luckBonus: 0,   desc: '4.50x Speed' },
+      { id: 'ruby',             cost: 100000,     currency: 'platinum', speedMultiplier: 6.0,  luckBonus: 0.5, desc: '6.00x Speed, +0.5x Luck' },
+      { id: 'sapphire',         cost: 1000000,    currency: 'platinum', speedMultiplier: 8.5,  luckBonus: 1.2, desc: '8.50x Speed, +1.2x Luck' },
+      { id: 'rainbow',          cost: 1000000000, currency: 'platinum', speedMultiplier: 15.0, luckBonus: 3.0, desc: '15.0x Speed, +3.0x Luck' }
     ];
 
-    /* Increased Max Levels for Progression Longevity */
+    /* Increased Max Levels & Platinum Upgrades Added */
     const upgradesConfig = [
-      { id: 'multiMine',      name: 'Multi-Mine',            icon: './upgrades.png',     baseCost: 500,     costMult: 1.8, maxLevel: 100, descPerLevel: '+1 Mining Square per action' },
-      { id: 'luckBoost',      name: 'Extra Luck',            icon: './upgrades.png',     baseCost: 500,     costMult: 2.2, maxLevel: 50,  descPerLevel: '+25% Rare Find Chance' },
-      { id: 'coinMulti',      name: 'Coin Multiplier',       icon: './upgrades.png',     baseCost: 750,     costMult: 2.2, maxLevel: 50,  descPerLevel: '+50% Coins Earned' },
-      { id: 'autoSpeed',      name: 'Auto-Speed',            icon: './upgrades.png',     baseCost: 1500,    costMult: 2.5, maxLevel: 25,  descPerLevel: '+15% Faster Auto-Mining' },
-      { id: 'unlockPlatinum', name: 'Unlock Platinum Coins', icon: './platinumcoin.png', baseCost: 1000000, costMult: 1.0, maxLevel: 1,   descPerLevel: 'Unlocks Platinum currency (0.1% to drop)' }
+      { id: 'multiMine',      name: 'Multi-Mine',            icon: './upgrades.png',     baseCost: 500,     currency: 'coins',    costMult: 1.8, maxLevel: 100, descPerLevel: '+1 Mining Square per action' },
+      { id: 'luckBoost',      name: 'Extra Luck',            icon: './upgrades.png',     baseCost: 500,     currency: 'coins',    costMult: 2.2, maxLevel: 50,  descPerLevel: '+25% Rare Find Chance' },
+      { id: 'coinMulti',      name: 'Coin Multiplier',       icon: './upgrades.png',     baseCost: 750,     currency: 'coins',    costMult: 2.2, maxLevel: 50,  descPerLevel: '+50% Coins Earned' },
+      { id: 'autoSpeed',      name: 'Auto-Speed',            icon: './upgrades.png',     baseCost: 1500,    currency: 'coins',    costMult: 2.5, maxLevel: 25,  descPerLevel: '+15% Faster Auto-Mining' },
+      { id: 'unlockPlatinum', name: 'Unlock Platinum Coins', icon: './platinumcoin.png', baseCost: 1000000, currency: 'coins',    costMult: 1.0, maxLevel: 1,   descPerLevel: 'Unlocks Platinum currency & rare 0.1% drops' },
+      { id: 'platGain',       name: 'Platinum Gain',         icon: './platinumcoin.png', baseCost: 10,      currency: 'platinum', costMult: 3.0, maxLevel: 20,  descPerLevel: '+1 Extra Platinum per Drop' },
+      { id: 'platLuck',       name: 'Platinum Luck',         icon: './platinumcoin.png', baseCost: 25,      currency: 'platinum', costMult: 2.5, maxLevel: 10,  descPerLevel: '+0.1% Platinum Drop Chance' }
     ];
 
     let upgradeLevels = {
@@ -977,7 +980,9 @@
       luckBoost: 0,
       coinMulti: 0,
       autoSpeed: 0,
-      unlockPlatinum: 0
+      unlockPlatinum: 0,
+      platGain: 0,
+      platLuck: 0
     };
 
     function calculateUpgradeCost(upg, level) {
@@ -989,7 +994,7 @@
           else if (l < 15) mult = 1.35;
           else mult = 1.15;
         }
-        cost = Math.floor(cost * mult) + (l * 250);
+        cost = Math.floor(cost * mult) + (upg.currency === 'platinum' ? 0 : (l * 250));
       }
       return cost;
     }
@@ -1413,16 +1418,18 @@
         const isEquipped = equippedPickaxe === p.id;
         const isLockedCurrency = p.currency === 'platinum' && !isPlatUnlocked;
 
-        let btnLabel = p.currency === 'platinum' ? `${p.cost.toLocaleString()} Plat` : `$${p.cost.toLocaleString()}`;
+        let btnContent = p.currency === 'platinum' 
+          ? `${p.cost.toLocaleString()} <img src="./platinumcoin.png" class="btn-icon-img" alt="plat" />` 
+          : `$${p.cost.toLocaleString()}`;
         let btnClass = 'buy-btn';
         let disabled = false;
 
         if (isEquipped) {
-          btnLabel = 'EQUIPPED';
+          btnContent = 'EQUIPPED';
           btnClass = 'buy-btn equipped';
           disabled = true;
         } else if (isOwned) {
-          btnLabel = 'EQUIP';
+          btnContent = 'EQUIP';
         } else if (isLockedCurrency) {
           disabled = true;
         } else if (p.currency === 'platinum' && platCoins < p.cost) {
@@ -1441,7 +1448,7 @@
               <span class="shop-item-sub">${p.desc}</span>
             </div>
           </div>
-          <button class="${btnClass}" ${disabled ? 'disabled' : ''} onclick="handlePickaxeClick('${p.id}')">${btnLabel}</button>
+          <button class="${btnClass}" ${disabled ? 'disabled' : ''} onclick="handlePickaxeClick('${p.id}')">${btnContent}</button>
         `;
 
         list.appendChild(item);
@@ -1479,16 +1486,22 @@
       if (!list) return;
       list.innerHTML = '';
 
+      const isPlatUnlocked = upgradeLevels.unlockPlatinum > 0;
+
       upgradesConfig.forEach(upg => {
+        const isPlatUpgrade = upg.currency === 'platinum';
+        if (isPlatUpgrade && !isPlatUnlocked) return;
+
         const currentLvl = upgradeLevels[upg.id] || 0;
         const isMax = currentLvl >= upg.maxLevel;
         const cost = calculateUpgradeCost(upg, currentLvl);
-        const canAfford = coins >= cost;
+        
+        let canAfford = isPlatUpgrade ? (platCoins >= cost) : (coins >= cost);
 
         const item = document.createElement('div');
         item.className = 'shop-item';
 
-        let btnLabel = isMax ? 'MAX' : `$${cost.toLocaleString()}`;
+        let btnContent = isMax ? 'MAX' : (isPlatUpgrade ? `${cost.toLocaleString()} <img src="./platinumcoin.png" class="btn-icon-img" alt="plat" />` : `$${cost.toLocaleString()}`);
         let disabled = isMax || !canAfford;
 
         item.innerHTML = `
@@ -1499,7 +1512,7 @@
               <span class="shop-item-sub">${upg.descPerLevel}</span>
             </div>
           </div>
-          <button class="buy-btn" ${disabled ? 'disabled' : ''} onclick="buyUpgrade('${upg.id}')">${btnLabel}</button>
+          <button class="buy-btn" ${disabled ? 'disabled' : ''} onclick="buyUpgrade('${upg.id}')">${btnContent}</button>
         `;
 
         list.appendChild(item);
@@ -1514,7 +1527,16 @@
       if (currentLvl >= upg.maxLevel) return;
 
       const cost = calculateUpgradeCost(upg, currentLvl);
-      if (coins >= cost) {
+      const isPlatUpgrade = upg.currency === 'platinum';
+
+      if (isPlatUpgrade && platCoins >= cost) {
+        platCoins -= cost;
+        upgradeLevels[upgId] = currentLvl + 1;
+        saveCoins();
+        saveUpgrades();
+        updateCoinsDisplay();
+        renderUpgradesList();
+      } else if (!isPlatUpgrade && coins >= cost) {
         coins -= cost;
         upgradeLevels[upgId] = currentLvl + 1;
         
@@ -1858,8 +1880,11 @@
           }
           inventory[selectedItem] = (inventory[selectedItem] || 0) + addAmount;
 
-          if (upgradeLevels.unlockPlatinum > 0 && Math.random() < 0.001) {
-            totalGainedPlat += 1;
+          if (upgradeLevels.unlockPlatinum > 0) {
+            const platDropChance = 0.001 + (upgradeLevels.platLuck * 0.001);
+            if (Math.random() < platDropChance) {
+              totalGainedPlat += 1 + upgradeLevels.platGain;
+            }
           }
           
           let gainedCoins = getRandomInt(selectedTier.coinRange[0], selectedTier.coinRange[1]);
