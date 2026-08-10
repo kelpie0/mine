@@ -796,7 +796,8 @@
       Coal:           './Coal-4x.png',
       Dirt:           './Dirt-4x.png',
       Stone:          './stone-4x.png',
-      bogo:           './bogo-4x.png'
+      bogo:           './bogo-4x.png',
+      Chem:           './Gem-4x.png'
     };
 
     const pickaxes = [
@@ -898,7 +899,7 @@
     }, { once: true });
 
     const baseTiers = [
-      { id: 't-100000000', label: '1/100,000,000', probability: 0.00000001, class: 'glow-100000000', items: ['xdd'], delay: 1500, sfx: 'legendary', coinRange: [100000000, 500000000] },
+      { id: 't-100000000', label: '1/100,000,000', probability: 0.00000001, class: 'glow-100000000', items: ['xdd','Chem'], delay: 1500, sfx: 'legendary', coinRange: [100000000, 500000000] },
       { id: 't-10000000',  label: '1/10,000,000',  probability: 0.0000001,  class: 'glow-10000000',  items: ['rainbla', 'bogo'], delay: 1200, sfx: 'legendary', coinRange: [10000000, 50000000] },
       { id: 't-1000000',   label: '1/1,000,000',   probability: 0.000001,   class: 'glow-1000000',   items: ['goldbla', 'lerolero', 'rainblorp'], delay: 1000, sfx: 'legendary', coinRange: [1000000, 5000000] },
       { id: 't-100000',    label: '1/100,000',     probability: 0.00001,    class: 'glow-100000',    items: ['bla', 'RainbowGoobert', 'maxwell', 'goldlorp'], delay: 700, sfx: 'legendary', coinRange: [100000, 500000] },
