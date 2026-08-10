@@ -359,6 +359,10 @@
       gap: 6px;
     }
 
+    .buy-btn * {
+      pointer-events: none;
+    }
+
     .buy-btn:disabled {
       background: #444;
       color: #888;
@@ -964,7 +968,6 @@
       { id: 'rainbow',          cost: 1000000000, currency: 'platinum', speedMultiplier: 15.0, luckBonus: 3.0, desc: '15.0x Speed, +3.0x Luck' }
     ];
 
-    /* Increased Max Levels & Platinum Upgrades Added */
     const upgradesConfig = [
       { id: 'multiMine',      name: 'Multi-Mine',            icon: './upgrades.png',     baseCost: 500,     currency: 'coins',    costMult: 1.8, maxLevel: 100, descPerLevel: '+1 Mining Square per action' },
       { id: 'luckBoost',      name: 'Extra Luck',            icon: './upgrades.png',     baseCost: 500,     currency: 'coins',    costMult: 2.2, maxLevel: 50,  descPerLevel: '+25% Rare Find Chance' },
@@ -994,7 +997,7 @@
           else if (l < 15) mult = 1.35;
           else mult = 1.15;
         }
-        cost = Math.floor(cost * mult) + (upg.currency === 'platinum' ? 0 : (l * 250));
+        cost = Math.floor(cost * mult);
       }
       return cost;
     }
