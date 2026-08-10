@@ -342,6 +342,39 @@
       object-fit: contain;
     }
 
+    /* Stats Display Styles */
+    .stat-card {
+      background: rgba(0, 0, 0, 0.3);
+      border: 2px solid var(--border);
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .stat-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .stat-img {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+    }
+
+    .stat-label {
+      font-size: 0.55rem;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 0.75rem;
+      color: #fff;
+    }
+
     /* Enchantment Table Theme */
     .enchant-modal {
       background: var(--panel);
@@ -492,12 +525,12 @@
       width: 100%;
       max-height: 60vh;
       overflow-y: auto;
-      scrollbar-width: none; /* Hide scrollbar for Firefox */
-      -ms-overflow-style: none; /* Hide scrollbar for IE/Edge */
+      scrollbar-width: none;
+      -ms-overflow-style: none;
     }
 
     .cards-container::-webkit-scrollbar {
-      display: none; /* Hide scrollbar for Chrome/Safari */
+      display: none;
     }
 
     /* Card Frame */
@@ -515,7 +548,6 @@
       flex-shrink: 0;
     }
 
-    /* Dynamic Sizing when Multiple Mining Squares Exist */
     .cards-container.multi-2 .roll-card { width: 220px; height: 220px; }
     .cards-container.multi-3 .roll-card { width: 180px; height: 180px; }
     .cards-container.multi-4 .roll-card { width: 150px; height: 150px; }
@@ -656,6 +688,10 @@
       <span class="coins-text" id="coinsText">0</span>
     </div>
 
+    <button class="icon-btn" onclick="openModal('statsModal')" title="Stats">
+      <img src="./stats.png" alt="stats" />
+    </button>
+
     <button class="icon-btn" onclick="openModal('shopModal')" title="Pickaxe Shop">
       <img src="./shop.png" alt="shop" />
     </button>
@@ -676,6 +712,32 @@
   <!-- Bottom Left Equipped Display -->
   <div class="equipped-display" id="equippedBox">
     <img id="eqPickImg" class="equipped-img-pick" src="./woodenpickaxe.png" alt="pick" />
+  </div>
+
+  <!-- Stats Modal -->
+  <div class="modal-overlay" id="statsModal">
+    <div class="modal-window">
+      <div class="modal-title">PLAYER STATS</div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <img class="stat-img" src="./luck.png" alt="luck" />
+          <div>
+            <div class="stat-label">LUCK MULTIPLIER</div>
+            <div class="stat-value" id="statLuckVal">1.00x</div>
+          </div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <img class="stat-img" src="./ironpickaxe.png" alt="speed" />
+          <div>
+            <div class="stat-label">MINING SPEED</div>
+            <div class="stat-value" id="statSpeedVal">1.00x</div>
+          </div>
+        </div>
+      </div>
+      <button class="close-btn" onclick="closeModal('statsModal')">CLOSE</button>
+    </div>
   </div>
 
   <!-- Settings Modal -->
@@ -811,8 +873,8 @@
 
     const upgradesConfig = [
       { id: 'multiMine', name: 'Multi-Mine', icon: './upgrades.png', baseCost: 500, costMult: 1.8, maxLevel: 50, descPerLevel: '+1 Mining Square per action' },
-      { id: 'luckBoost', name: 'Extra Luck', icon: './upgrades.png', baseCost: 500, costMult: 2.2, maxLevel: 10, descPerLevel: '+10% Rare Find Chance' },
-      { id: 'coinMulti', name: 'Coin Multiplier', icon: './upgrades.png', baseCost: 750, costMult: 2.2, maxLevel: 10, descPerLevel: '+25% Coins Earned' },
+      { id: 'luckBoost', name: 'Extra Luck', icon: './upgrades.png', baseCost: 500, costMult: 2.2, maxLevel: 10, descPerLevel: '+25% Rare Find Chance' },
+      { id: 'coinMulti', name: 'Coin Multiplier', icon: './upgrades.png', baseCost: 750, costMult: 2.2, maxLevel: 10, descPerLevel: '+50% Coins Earned' },
       { id: 'autoSpeed', name: 'Auto-Speed', icon: './upgrades.png', baseCost: 1500, costMult: 2.5, maxLevel: 5, descPerLevel: '+15% Faster Auto-Mining' }
     ];
 
@@ -852,7 +914,19 @@
       { id: 'luck_3', name: 'Looting III', cost: 60000, type: 'luck', level: 3, desc: '1.5x Rare Luck Boost' },
       { id: 'greed_1', name: 'Greed I', cost: 3500, type: 'greed', level: 1, desc: '15% Chance for +50 Bonus Coins' },
       { id: 'greed_2', name: 'Greed II', cost: 18000, type: 'greed', level: 2, desc: '25% Chance for +200 Bonus Coins' },
-      { id: 'mending_1', name: 'Mending I', cost: 45000, type: 'mending', level: 1, desc: '5% Chance for Free Lapis per Mine' }
+      { id: 'mending_1', name: 'Mending I', cost: 45000, type: 'mending', level: 1, desc: '5% Chance for Free Lapis per Mine' },
+      { id: 'silktouch_1', name: 'Silk Touch I', cost: 10000, type: 'silktouch', level: 1, desc: '10% Chance to Double Item Count' },
+      { id: 'smite_1', name: 'Smite I', cost: 8000, type: 'smite', level: 1, desc: '+15% Extra Coins on Common Tier Items' },
+      { id: 'flame_1', name: 'Flame I', cost: 15000, type: 'flame', level: 1, desc: '5% Chance for 5x Super-Burned Coins' },
+      { id: 'respiration_1', name: 'Respiration I', cost: 3000, type: 'respiration', level: 1, desc: '+10% Speed during Auto-Mine' },
+      { id: 'blast_1', name: 'Blast Protection', cost: 20000, type: 'blast', level: 1, desc: '5% Chance to Instantly Refresh Cooldown' },
+      { id: 'swift_1', name: 'Swift Sneak', cost: 12500, type: 'swiftsneak', level: 1, desc: '+20% Speed on Multi-Mine Cards' },
+      { id: 'soul_1', name: 'Soul Speed', cost: 30000, type: 'soulspeed', level: 1, desc: '1.35x Luck when Mining automatically' },
+      { id: 'thorns_1', name: 'Thorns I', cost: 7000, type: 'thorns', level: 1, desc: 'Grants +5 Coins every time a Common Block lands' },
+      { id: 'frost_1', name: 'Frost Walker', cost: 35000, type: 'frost', level: 1, desc: 'Guarantees minimum +25 Coins per mine' },
+      { id: 'infinity_1', name: 'Infinity I', cost: 100000, type: 'infinity', level: 1, desc: '1% Chance to Instantly Gain 10,000 Coins' },
+      { id: 'curse_vanish', name: 'Curse of Vanishing', cost: 100, type: 'curse_vanish', level: 1, desc: '3.0x Luck, but 50% Chance to Gain 0 Coins' },
+      { id: 'curse_bind', name: 'Curse of Binding', cost: 100, type: 'curse_bind', level: 1, desc: '2.0x Coins, but Pickaxe Speed is halved' }
     ];
 
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -900,7 +974,7 @@
 
     const baseTiers = [
       { id: 't-100000000', label: '1/100,000,000', probability: 0.00000001, class: 'glow-100000000', items: ['xdd','Chem'], delay: 1500, sfx: 'legendary', coinRange: [100000000, 500000000] },
-      { id: 't-10000000',  label: '1/10,000,000',  probability: 0.0000001,  class: 'glow-10000000',  items: ['rainbla', 'bogo'], delay: 1200, sfx: 'legendary', coinRange: [10000000, 50000000] },
+      { id: 't-10000000',  label: '1/10,000,000',  probability: 0.0000001,  class: 'glow-10000000',  items: ['rainbla', 'bogo'], delay: 1200, sfx: 'legendary', coinRange: [10000000, 5000000] },
       { id: 't-1000000',   label: '1/1,000,000',   probability: 0.000001,   class: 'glow-1000000',   items: ['goldbla', 'lerolero', 'rainblorp'], delay: 1000, sfx: 'legendary', coinRange: [1000000, 5000000] },
       { id: 't-100000',    label: '1/100,000',     probability: 0.00001,    class: 'glow-100000',    items: ['bla', 'RainbowGoobert', 'maxwell', 'goldlorp'], delay: 700, sfx: 'legendary', coinRange: [100000, 500000] },
       { id: 't-10000',     label: '1/10,000',      probability: 0.0001,     class: 'glow-10000',     items: ['RainbowGem', 'EnchantedCat', 'glorp'], delay: 500, sfx: 'legendary', coinRange: [10000, 50000] },
@@ -924,6 +998,32 @@
     let availableShopEnchants = [];
     let nextResetTimestamp = 0;
     const RESET_INTERVAL_MS = 10 * 60 * 1000;
+
+    function getLuckMultiplier() {
+      let luck = 1.0 + (upgradeLevels.luckBoost * 0.25);
+      if (currentEnchant && currentEnchant.type === 'luck') {
+        const luckMultipliers = [1.0, 1.1, 1.25, 1.5];
+        luck *= luckMultipliers[currentEnchant.level];
+      }
+      if (currentEnchant && currentEnchant.type === 'soulspeed' && autoInterval) {
+        luck *= 1.35;
+      }
+      if (currentEnchant && currentEnchant.type === 'curse_vanish') {
+        luck *= 3.0;
+      }
+      return luck;
+    }
+
+    function updateStatsDisplay() {
+      const luckVal = getLuckMultiplier();
+      const speedVal = getMiningSpeedMultiplier();
+
+      const luckEl = document.getElementById('statLuckVal');
+      const speedEl = document.getElementById('statSpeedVal');
+
+      if (luckEl) luckEl.textContent = `${luckVal.toFixed(2)}x`;
+      if (speedEl) speedEl.textContent = `${speedVal.toFixed(2)}x`;
+    }
 
     function loadSavedData() {
       const savedInv = localStorage.getItem('mine_inventory');
@@ -1091,6 +1191,7 @@
 
     function openModal(id) { 
       document.getElementById(id).classList.add('active'); 
+      if (id === 'statsModal') updateStatsDisplay();
       if (id === 'shopModal') renderShopList();
       if (id === 'upgradesModal') renderUpgradesList();
       if (id === 'enchantModal') renderEnchantList();
@@ -1147,6 +1248,12 @@
       if (currentEnchant && currentEnchant.type === 'efficiency') {
         effBonus += currentEnchant.level * 0.2;
       }
+      if (currentEnchant && currentEnchant.type === 'swiftsneak' && upgradeLevels.multiMine > 0) {
+        effBonus += 0.2;
+      }
+      if (currentEnchant && currentEnchant.type === 'curse_bind') {
+        effBonus *= 0.5;
+      }
       return pick.speedMultiplier * effBonus;
     }
 
@@ -1172,7 +1279,10 @@
 
     function restartAutoMine() {
       if (autoInterval) clearInterval(autoInterval);
-      const autoSpeedBonus = 1.0 + (upgradeLevels.autoSpeed * 0.15);
+      let autoSpeedBonus = 1.0 + (upgradeLevels.autoSpeed * 0.15);
+      if (currentEnchant && currentEnchant.type === 'respiration') {
+        autoSpeedBonus += 0.10;
+      }
       const baseDelay = 600;
       const actualDelay = Math.max(100, Math.floor((baseDelay / getMiningSpeedMultiplier()) / autoSpeedBonus));
       executeMiningCycle();
@@ -1527,11 +1637,7 @@
       let highestSfx = 'mine';
       const sfxPriority = { 'mine': 1, 'rare': 2, 'legendary': 3 };
 
-      let luckBoost = 1.0 + (upgradeLevels.luckBoost * 0.10);
-      if (currentEnchant && currentEnchant.type === 'luck') {
-        const luckMultipliers = [1.0, 1.1, 1.25, 1.5];
-        luckBoost *= luckMultipliers[currentEnchant.level];
-      }
+      let luckBoost = getLuckMultiplier();
 
       let longestDelay = 0;
 
@@ -1556,18 +1662,27 @@
         }
 
         const totalSpeed = getMiningSpeedMultiplier();
-        const actualDelay = Math.max(20, Math.floor(selectedTier.delay / totalSpeed));
+        let actualDelay = Math.max(20, Math.floor(selectedTier.delay / totalSpeed));
+        
+        if (currentEnchant && currentEnchant.type === 'blast' && Math.random() < 0.05) {
+          actualDelay = 0;
+        }
+
         if (actualDelay > longestDelay) longestDelay = actualDelay;
 
         card.style.setProperty('--shake-dur', `${Math.max(0.02, actualDelay / 2500)}s`);
         card.className = 'roll-card rolling';
 
         setTimeout(() => {
-          inventory[selectedItem] = (inventory[selectedItem] || 0) + 1;
+          let addAmount = 1;
+          if (currentEnchant && currentEnchant.type === 'silktouch' && Math.random() < 0.10) {
+            addAmount = 2;
+          }
+          inventory[selectedItem] = (inventory[selectedItem] || 0) + addAmount;
           
           let gainedCoins = getRandomInt(selectedTier.coinRange[0], selectedTier.coinRange[1]);
 
-          const coinMultiplier = 1.0 + (upgradeLevels.coinMulti * 0.25);
+          const coinMultiplier = 1.0 + (upgradeLevels.coinMulti * 0.50);
           gainedCoins = Math.floor(gainedCoins * coinMultiplier);
 
           if (currentEnchant && currentEnchant.type === 'fortune') {
@@ -1586,6 +1701,34 @@
             const chance = currentEnchant.level === 1 ? 0.15 : 0.25;
             const bonus = currentEnchant.level === 1 ? 50 : 200;
             if (Math.random() < chance) gainedCoins += bonus;
+          }
+
+          if (currentEnchant && currentEnchant.type === 'smite' && (selectedTier.id === 't-1' || selectedTier.id === 't-10')) {
+            gainedCoins = Math.floor(gainedCoins * 1.15);
+          }
+
+          if (currentEnchant && currentEnchant.type === 'flame' && Math.random() < 0.05) {
+            gainedCoins *= 5;
+          }
+
+          if (currentEnchant && currentEnchant.type === 'thorns' && (selectedTier.id === 't-1' || selectedTier.id === 't-10')) {
+            gainedCoins += 5;
+          }
+
+          if (currentEnchant && currentEnchant.type === 'frost' && gainedCoins < 25) {
+            gainedCoins = 25;
+          }
+
+          if (currentEnchant && currentEnchant.type === 'curse_bind') {
+            gainedCoins *= 2;
+          }
+
+          if (currentEnchant && currentEnchant.type === 'curse_vanish' && Math.random() < 0.5) {
+            gainedCoins = 0;
+          }
+
+          if (currentEnchant && currentEnchant.type === 'infinity' && Math.random() < 0.01) {
+            gainedCoins += 10000;
           }
 
           if (currentEnchant && currentEnchant.type === 'mending') {
