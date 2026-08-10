@@ -1100,6 +1100,17 @@
     let nextResetTimestamp = 0;
     const RESET_INTERVAL_MS = 10 * 60 * 1000;
 
+    function refreshActiveModals() {
+      const activeModals = document.querySelectorAll('.modal-overlay.active');
+      activeModals.forEach(modal => {
+        if (modal.id === 'statsModal') updateStatsDisplay();
+        if (modal.id === 'shopModal') renderShopList();
+        if (modal.id === 'upgradesModal') renderUpgradesList();
+        if (modal.id === 'enchantModal') renderEnchantList();
+        if (modal.id === 'enchantIndexModal') renderEnchantIndex();
+      });
+    }
+
     function getLuckMultiplier() {
       let luck = 1.0 + (upgradeLevels.luckBoost * 0.25);
       const equippedPick = pickaxes.find(p => p.id === equippedPickaxe);
@@ -1477,7 +1488,7 @@
 
       savePickaxes();
       updateEquippedDisplay();
-      renderShopList();
+      refreshActiveModals();
       if (autoInterval) restartAutoMine();
     }
 
@@ -1535,7 +1546,7 @@
         saveCoins();
         saveUpgrades();
         updateCoinsDisplay();
-        renderUpgradesList();
+        refreshActiveModals();
       } else if (!isPlatUpgrade && coins >= cost) {
         coins -= cost;
         upgradeLevels[upgId] = currentLvl + 1;
@@ -1543,16 +1554,13 @@
         saveCoins();
         saveUpgrades();
         updateCoinsDisplay();
-        renderUpgradesList();
+        refreshActiveModals();
 
         if (upgId === 'multiMine') {
           setupMiningCards();
         }
         if (upgId === 'autoSpeed' && autoInterval) {
           restartAutoMine();
-        }
-        if (upgId === 'unlockPlatinum') {
-          renderShopList();
         }
       }
     }
@@ -1574,7 +1582,7 @@
       localStorage.setItem('mine_shop_enchants', JSON.stringify(availableShopEnchants));
       localStorage.setItem('mine_next_reset', nextResetTimestamp);
       
-      renderEnchantList();
+      refreshActiveModals();
     }
 
     function updateEnchantTimer() {
@@ -1598,7 +1606,7 @@
         saveCoins();
         saveLapis();
         updateCoinsDisplay();
-        renderEnchantList();
+        refreshActiveModals();
       }
     }
 
@@ -1715,7 +1723,7 @@
         saveEnchant();
         updateCoinsDisplay();
         updateEquippedDisplay();
-        renderEnchantList();
+        refreshActiveModals();
 
         if (autoInterval) restartAutoMine();
       }
@@ -1970,6 +1978,7 @@
         saveCoins();
         updateCoinsDisplay();
         updateFeed();
+        refreshActiveModals();
 
         playSound(highestSfx);
         if (!autoInterval) {
